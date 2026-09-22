@@ -20,7 +20,7 @@ var CATS = [
 ];
 var CATS_G = [
   {id:'cliente', n:'Cliente / agência', c:'#3DDC97'},
-  {id:'prolabore', n:'Pró-labore', c:'#2FC4B2'},
+  {id:'prolabore', n:'Salário', c:'#2FC4B2'},
   {id:'freela', n:'Freelance', c:'#4FB3E8'},
   {id:'reembolso', n:'Reembolso', c:'#9A9CBA'},
   {id:'outrosg', n:'Outros', c:'#B9A2FF'}
@@ -32,6 +32,7 @@ var CLASSES = [
   {id:'fii', n:'Fundos imobiliários', c:'#A78BFA', d:'Cotas de fundos que vivem de aluguel. Pagam renda mensal, oscilam.'},
   {id:'acao', n:'Ações', c:'#F472B6', d:'Pedaços de empresas. Longo prazo, sobe e desce.'},
   {id:'rv', n:'Renda variável (outros)', c:'#22C7D6', d:'ETFs, fundos multimercado, BDRs.'},
+  {id:'ext', n:'Exterior e dólar', c:'#FFD166', d:'ETFs e BDRs de fora, dólar em conta global. Proteção contra o real.'},
   {id:'cripto', n:'Bitcoin e cripto', c:'#F7931A', d:'Altíssima oscilação. Só o que você aguenta ver cair pela metade.'}
 ];
 function catDe(id, tipo){ var L = tipo === 'ganho' ? CATS_G : CATS; return L.filter(function(c){ return c.id === id; })[0] || (tipo === 'ganho' ? CATS_G[CATS_G.length-1] : CATS[CATS.length-1]); }
@@ -62,7 +63,7 @@ function planilhaOriginal(){
   var mapa = {'Moradia':'moradia','Condomínio':'moradia','Supermercado':'mercado','Água':'contas','Luz':'contas','Gás':'contas','IPTU':'moradia','Plano':'saude','Seguro':'saude','Investimentos':'outros','Academia':'academia','Aplicativos':'assinaturas','Celular':'contas','Combustível':'transporte','Empréstimos':'dividas','Cursos':'educacao','Farmácia':'saude','Financiamento':'transporte','Gastos com animais':'familia','Imprevistos':'outros','Transporte':'transporte','Internet':'contas','Lazer':'lazer','Streaming':'assinaturas','Padaria':'mercado','Restaurantes':'restaurante','Salão':'cuidados','Tarifas':'outros'};
   function cat(n){ for(var k in mapa) if(n.indexOf(k) === 0) return mapa[k]; return 'outros'; }
   return {
-    rec: [{id:'r_prolabore', nome:'Pró-labore (agência)', valor:0}],
+    rec: [{id:'r_prolabore', nome:'Meu salário (o menor mês que costuma cair)', valor:0}],
     ess: ess.map(function(n){ return {id:uid(), nome:n, valor:0, cat:cat(n), cortadoEm:null}; }),
     nao: nao.map(function(n){ return {id:uid(), nome:n, valor:0, cat:cat(n), cortadoEm:null}; })
   };
@@ -241,12 +242,12 @@ function renderFinMes(){
   [['Sobra', s.poup], ['Custo essencial', s.fixo], ['Reserva', s.reserva], ['Besteira', s.best], ['Dívidas', s.div]].forEach(function(x){
     var c = el('div', 'hcard ' + x[1].f); c.appendChild(el('span', 'n', x[0])); c.appendChild(el('span', 'v', x[1].txt)); c.appendChild(el('span', 's', x[1].s)); h.appendChild(c);
   });
-  $('healthSub').textContent = s.renda > 0 ? (s.pisoReal ? 'piso ' : 'renda base ') + fmtK(s.renda) : 'preenche a planilha';
+  $('healthSub').textContent = s.renda > 0 ? (s.pisoReal ? 'salário base (menor mês) ' : 'salário base ') + fmtK(s.renda) : 'preenche a planilha';
   var al = $('finAlerts'); al.textContent = '';
   var frases = [];
   if(s.dv.rotativo) frases.push(['Você está no rotativo ou no cheque especial.', 'É o crédito mais caro do país. Próxima ação: parcela a fatura ou pede portabilidade hoje. Nunca paga o mínimo.']);
   if(s.poup.f === 'bad' && r.ganhos > 0) frases.push([r.sobra < 0 ? 'Saiu mais do que entrou este mês.' : 'Sobrou menos de 10%.', 'Próxima ação: abre a lista de besteiras do mês e corta o maior item agora.']);
-  if(s.fixo.f === 'bad') frases.push(['Fixos comem ' + s.fixo.txt + ' do pró-labore.', 'Próxima ação: abre a Planilha e renegocia ou corta 1 gasto fixo esta semana.']);
+  if(s.fixo.f === 'bad') frases.push(['Fixos comem ' + s.fixo.txt + ' do salário.', 'Próxima ação: abre a Planilha e renegocia ou corta 1 gasto fixo esta semana.']);
   if(s.div.f === 'bad' && !s.dv.rotativo) frases.push(['Mais de 35% da renda vai pra dívida.', 'Próxima ação: ordena as dívidas por taxa e leva a mais cara pra negociação (banco, Serasa Limpa Nome).']);
   if(s.reserva.f === 'bad' && s.ess > 0) frases.push(['Reserva abaixo de meio mês.', 'Qualquer imprevisto vira rotativo. Próxima ação: transfere hoje meio mês de custo essencial (' + fmt(s.ess / 2) + ') pra Tesouro Selic ou CDB de liquidez diária.']);
   if(s.best.f === 'bad') frases.push(['Besteira acima de 10% da renda.', 'Próxima ação: apaga o cartão salvo nos apps e usa a Lista do Depois: 72h antes de qualquer compra não planejada.']);
@@ -289,12 +290,47 @@ function renderFinMes(){
     var top = lancMes(fm).filter(function(t){ return t.arrep; }).sort(function(a, b){ return b.valor - a.valor; }).slice(0, 3);
     var ul = el('div'); top.forEach(function(t){ ul.appendChild(txRow(t)); }); rg.appendChild(ul);
   }
+  renderChart3(); renderCorte(r);
   var lt = $('lastTx'); lt.textContent = '';
   var ult = lancMes(fm).slice().sort(function(a, b){ return b.data.localeCompare(a.data) || (b.atualizadoEm || '').localeCompare(a.atualizadoEm || ''); }).slice(0, 5);
   if(!ult.length) lt.appendChild(el('p', 'empty', 'Nada ainda.'));
   ult.forEach(function(t){ lt.appendChild(txRow(t)); });
 }
 
+function renderChart3(){
+  var box = $('chart3'); box.textContent = '';
+  var meses = [], maxV = 0;
+  for(var i = 5; i >= 0; i--){ var d = new Date(fm.getFullYear(), fm.getMonth() - i, 1), L = lancMes(d), e = 0, n = 0, g = 0; L.forEach(function(t){ if(t.tipo === 'ganho') g += +t.valor || 0; else if(t.tipo === 'gasto'){ if(catDe(t.cat).g === 'ess') e += +t.valor || 0; else n += +t.valor || 0; } }); meses.push({d:d, g:g, e:e, n:n}); maxV = Math.max(maxV, g, e, n); }
+  if(!maxV){ box.appendChild(el('p', 'empty', 'Sem lançamentos ainda. O gráfico aparece com o primeiro mês.')); return; }
+  var W = 360, H = 150, pad = 4, base = H - 22, gw = W / 6, bw = (gw - 14) / 3, ns = 'http://www.w3.org/2000/svg', svg = document.createElementNS(ns, 'svg'); svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+  meses.forEach(function(m, i){
+    [['g', '#3ECF8E'], ['e', '#6F8CFF'], ['n', '#FF6B7A']].forEach(function(k, j){ var h = m[k[0]] / maxV * (base - 14), r = document.createElementNS(ns, 'rect'); r.setAttribute('x', i * gw + 7 + j * bw); r.setAttribute('y', base - h); r.setAttribute('width', Math.max(0, bw - 2)); r.setAttribute('height', h); r.setAttribute('rx', '3'); r.setAttribute('fill', k[1]); r.style.opacity = same(m.d, fm) ? '1' : '.55'; svg.appendChild(r); });
+    var t = document.createElementNS(ns, 'text'); t.setAttribute('x', i * gw + gw / 2); t.setAttribute('y', H - 6); t.setAttribute('text-anchor', 'middle'); t.textContent = MES3[m.d.getMonth()]; if(same(m.d, fm)) t.style.fill = 'var(--ink)'; svg.appendChild(t);
+  });
+  box.appendChild(svg);
+  var cur = meses[5], lg = el('div', 'leg3'); [['#3ECF8E', 'Entrou ' + fmtK(cur.g)], ['#6F8CFF', 'Essencial ' + fmtK(cur.e)], ['#FF6B7A', 'Não essencial ' + fmtK(cur.n)]].forEach(function(x){ var s = el('span'); var i = el('i'); i.style.background = x[0]; s.appendChild(i); s.appendChild(document.createTextNode(x[1])); lg.appendChild(s); }); box.appendChild(lg);
+  if(cur.g > 0) box.appendChild(el('p', 'small', 'Do que entrou, ' + Math.round(cur.e / cur.g * 100) + '% foi pro essencial e ' + Math.round(cur.n / cur.g * 100) + '% pro não essencial. O vermelho é a parte que você controla.'));
+}
+function renderCorte(r){
+  var box = $('corteBox'); box.textContent = ''; var itens = [];
+  orcAtivo(FIN.orc.nao).forEach(function(o){ itens.push({tipo:'planilha', o:o, nome:o.nome, valor:+o.valor, sub:'fixo da planilha · ' + catDe(o.cat).n}); });
+  var por = {}; lancMes(fm).forEach(function(t){ if(t.tipo === 'gasto' && catDe(t.cat).g === 'nao' && !t.orc) por[t.cat] = (por[t.cat] || 0) + (+t.valor || 0); });
+  Object.keys(por).forEach(function(id){ itens.push({tipo:'cat', nome:catDe(id).n, valor:por[id], sub:'avulsos deste mês'}); });
+  if(r.arrep > 0) itens.push({tipo:'best', nome:'Besteiras marcadas', valor:r.arrep, sub:r.nArrep + ' gastos que você disse que não precisava'});
+  itens.sort(function(a, b){ return b.valor - a.valor; });
+  var total = itens.reduce(function(s, x){ return s + x.valor; }, 0);
+  $('corteSub').textContent = itens.length ? 'até ' + fmtK(total) + '/mês' : '';
+  if(!itens.length){ box.appendChild(el('p', 'empty', 'Nada não essencial ainda. Preenche a planilha e lança os gastos.')); return; }
+  itens.slice(0, 10).forEach(function(x){
+    var row = el('div', 'orc-row'); if(x.tipo !== 'planilha') row.style.gridTemplateColumns = 'minmax(0,1fr) auto';
+    var tx = el('span'); tx.appendChild(el('span', 'nm', x.nome)); var sb = el('span', 'sb', x.sub + ' · '); var b = el('b', null, 'cortando: +' + fmtK(x.valor * 12) + '/ano'); sb.appendChild(b); tx.appendChild(sb); row.appendChild(tx);
+    row.appendChild(el('span', 'vl', fmt(x.valor)));
+    if(x.tipo === 'planilha'){ var c = el('button', 'cutbtn', 'Cortar'); c.type = 'button'; c.id = 'corte-' + x.o.id; c.addEventListener('click', function(){ if(!confirm('Marcar "' + x.o.nome + '" como cortado?')) return; x.o.cortadoEm = new Date().toISOString(); finSave(); render(); toast('Cortado. Menos ' + fmt(x.o.valor) + ' por mês.'); }); row.appendChild(c); }
+    box.appendChild(row);
+  });
+  var cortes = FIN.orc.ess.concat(FIN.orc.nao).filter(function(o){ return o.cortadoEm; }), econ = cortes.reduce(function(a, o){ return a + (+o.valor || 0); }, 0);
+  if(cortes.length) box.appendChild(el('p', 'cut-banner', 'Você já cortou ' + fmt(econ) + ' por mês (' + cortes.map(function(o){ return o.nome; }).join(', ') + ').'));
+}
 /* EXTRATO */
 function renderExtrato(){
   var sel = $('txFilter'); var atual = txFiltro; sel.textContent = '';
@@ -315,7 +351,7 @@ function sheetOrc(grupo, o){
   var novo = !o; o = o ? clone(o) : {id:uid(), nome:'', valor:0, cat: grupo === 'ess' ? 'moradia' : 'outros', cortadoEm:null};
   openSheet(function(sh){
     sh.appendChild(el('h3', null, novo ? (grupo === 'rec' ? 'Nova entrada prevista' : 'Nova despesa da planilha') : 'Editar'));
-    var inm = el('input'); inm.type = 'text'; inm.value = o.nome; inm.maxLength = 50; inm.placeholder = grupo === 'rec' ? 'Ex.: pró-labore, cliente fixo' : 'Ex.: aluguel, Netflix'; inm.addEventListener('input', function(){ o.nome = inm.value; });
+    var inm = el('input'); inm.type = 'text'; inm.value = o.nome; inm.maxLength = 50; inm.placeholder = grupo === 'rec' ? 'Ex.: salário, cliente fixo' : 'Ex.: aluguel, Netflix'; inm.addEventListener('input', function(){ o.nome = inm.value; });
     sh.appendChild(campo('Nome', inm, 'onome'));
     var am = el('div', 'amount'); am.appendChild(el('span', null, 'R$'));
     var iv = el('input'); iv.type = 'text'; iv.inputMode = 'decimal'; iv.id = 'ovalor'; iv.placeholder = '0,00'; iv.value = o.valor ? (+o.valor).toLocaleString('pt-BR', {minimumFractionDigits:2}) : ''; iv.addEventListener('input', function(){ o.valor = parseBRL(iv.value); }); iv.setAttribute('aria-label', 'Valor por mês');
@@ -361,7 +397,7 @@ function renderPlanilha(){
   var t1 = el('div', 'orc-total big'); t1.appendChild(el('span', null, 'Se a planilha estiver certa, sobra por mês')); t1.appendChild(el('b', null, fmt(sobra))); t1.querySelector('b').style.color = sobra >= 0 ? 'var(--good)' : 'var(--bad)'; rs.appendChild(t1);
   var t2 = el('div', 'orc-total'); t2.appendChild(el('span', null, 'Reserva ideal (6 × essenciais)')); t2.appendChild(el('b', null, fmt(ess * 6))); rs.appendChild(t2);
   var t3 = el('div', 'orc-total'); t3.appendChild(el('span', null, 'Custo essencial sobre a renda')); t3.appendChild(el('b', null, rec > 0 ? Math.round(ess / rec * 100) + '%' : '–')); rs.appendChild(t3);
-  if(rec === 0) rs.appendChild(el('p', 'small', 'Coloca a entrada prevista (o mês fraco, não o forte) pra planilha fechar a conta.'));
+  if(rec === 0) rs.appendChild(el('p', 'small', 'Coloca o seu salário (o menor mês que costuma cair, não o melhor) pra planilha fechar a conta.'));
   var cortes = FIN.orc.ess.concat(FIN.orc.nao).filter(function(o){ return o.cortadoEm; }), econ = cortes.reduce(function(a, o){ return a + (+o.valor || 0); }, 0);
   var cb = $('cutBanner'); cb.hidden = !cortes.length; cb.textContent = '';
   if(cortes.length){ cb.appendChild(el('b', null, fmt(econ) + ' por mês cortados')); cb.appendChild(document.createTextNode(cortes.length + (cortes.length === 1 ? ' item' : ' itens') + ' que você parou de pagar. Em um ano são ' + fmt(econ * 12) + '.')); }

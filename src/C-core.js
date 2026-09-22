@@ -1,7 +1,7 @@
 <script>
 (function(){
 'use strict';
-var VERSAO = '3.2.1';
+var VERSAO = '3.3';
 var CONTA_DESDE = new Date(2026, 8, 22);
 var INICIO = new Date(2026, 8, 28);
 var DOW3 = ['dom','seg','ter','qua','qui','sex','sáb'];
@@ -125,7 +125,7 @@ function plano(date, ignorarOverrides){
   for(var i = 1; i < out.length; i++) if(out[i].s <= out[i-1].s) out[i].s = Math.min(1439, out[i-1].s + (out[i-1].dur || 30));
   for(i = 0; i < out.length; i++){
     out[i].e = i < out.length - 1 ? out[i+1].s : 1440;
-    out[i].check = out[i].vale || out[i].opcional;
+    out[i].check = true;
     var due = 1440;
     for(var j = i + 1; j < out.length; j++) if(out[j].vale){ due = out[j].s; break; }
     out[i].due = due;

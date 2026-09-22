@@ -274,7 +274,7 @@ function render(){
   else if(tab === 'placar'){ $('pl-sem').hidden = plSeg !== 'semana'; $('pl-m').hidden = plSeg !== 'mes'; $('pl-semana').setAttribute('aria-selected', plSeg === 'semana' ? 'true' : 'false'); $('pl-mes').setAttribute('aria-selected', plSeg === 'mes' ? 'true' : 'false'); if(plSeg === 'semana') renderSemana(); else renderMes(); }
   else if(tab === 'financas') renderFin();
   else if(tab === 'investir') renderInv();
-  else { renderDiag(); $('rotBox').hidden = !rotAberta; $('rotToggle').textContent = rotAberta ? 'Fechar' : 'Abrir'; if(rotAberta) renderRotina(); }
+  else { renderDiag(); renderLembretes(); $('rotBox').hidden = !rotAberta; $('rotToggle').textContent = rotAberta ? 'Fechar' : 'Abrir'; if(rotAberta) renderRotina(); }
   $('fab').hidden = tab !== 'financas' || finSeg === 'guia';
   renderInstall();
 }
@@ -306,6 +306,10 @@ function tick(){
   if(b !== balde){ balde = b; renderHoje(); } else renderNow();
 }
 carregar(); finLoad();
+aplicarTema(temaAtual());
+$('temaSeg').addEventListener('click', function(e){ var b = e.target.closest('button'); if(!b) return; var t = b.getAttribute('data-tema'); try{ localStorage.setItem('rotina.v3.tema', t); }catch(x){} aplicarTema(t); toast(t === 'light' ? 'Tema claro.' : t === 'dark' ? 'Tema escuro.' : 'Segue o celular.'); });
+if(window.matchMedia) try{ window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', function(){ if(temaAtual() === 'auto') aplicarTema('auto'); }); }catch(e){}
+$('icsBtn').addEventListener('click', function(){ try{ var blob = new Blob([icsDaRotina()], {type:'text/calendar'}), a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'rotina.ics'; document.body.appendChild(a); a.click(); setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 1500); toast('Arquivo baixado. No computador: Google Agenda → Configurações → Importar.', 5000); }catch(e){ toast('Não consegui gerar o arquivo.'); } });
 $('ver').textContent = 'Rotina v' + VERSAO;
 setTab(TABS.indexOf(abrir) > -1 ? abrir : 'hoje');
 try{ if(new URLSearchParams(location.search).get('acao') === 'lancar'){ setTab('financas'); setTimeout(function(){ sheetLanc(); }, 150); history.replaceState(null, '', location.pathname); } }catch(e){}

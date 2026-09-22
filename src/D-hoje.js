@@ -149,7 +149,7 @@ function renderNow(){
   var h = Math.floor(falta / 60), mm = falta % 60;
   $('nextIn').textContent = 'em ' + (h ? h + 'h' + (mm ? pad(mm) : '') : mm + ' min');
   var btn = $('nowBtn');
-  nowId = cur.check ? cur.k : null;
+  nowId = cur.k || null;
   btn.hidden = !nowId;
   if(nowId){
     var ok = marcado(dias[keyOf(hoje)], nowId);
@@ -210,11 +210,11 @@ function renderRail(){
     var done = b.check && marcado(rr, b.k);
     var late = b.vale && !done && conta && (passado || (ehHoje && m >= b.due));
     var delay = late && ehHoje && (m - b.due) < 30;
-    var row = el(b.check ? 'button' : 'div', 'stop' + (b.check ? '' : ' minor') + (reached ? ' reached' : '') + (isnow ? ' isnow' : '') + (done ? ' done' : '') + (late ? (delay ? ' delay' : ' late') : '') + (b.check && popId === b.k ? ' pop' : ''));
+    var row = el('button', 'stop' + ((b.vale || b.opcional) ? '' : ' minor') + (reached ? ' reached' : '') + (isnow ? ' isnow' : '') + (done ? ' done' : '') + (late ? (delay ? ' delay' : ' late') : '') + (popId === b.k ? ' pop' : ''));
     row.style.setProperty('--c', sky(b.s)); row.style.setProperty('--c2', sky(b.e));
     row.appendChild(el('span', 'time', hora(b.s)));
     var track = el('span', 'track');
-    if(b.check){ var node = el('span', 'node'); node.innerHTML = CHECK; track.appendChild(node); } else track.appendChild(el('span', 'dot'));
+    var node = el('span', 'node'); node.innerHTML = CHECK; track.appendChild(node);
     row.appendChild(track);
     var body = el('span', 'body'), t = el('span', 't', b.t);
     if(late) t.appendChild(el('span', 'tag ' + (delay ? 'delay' : 'late'), passado ? 'furou' : delay ? 'atrasado ' + (m - b.due) + ' min' : 'sem marcar'));

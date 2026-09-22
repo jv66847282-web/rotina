@@ -29,7 +29,7 @@ function renderGuia(){
 
 /* ===== INVESTIR ===== */
 var invSel = null, aporteVal = 0;
-var ALVO_PADRAO = {rf:60, fii:10, acao:15, rv:5, cripto:10}, BANDA = 5;
+var ALVO_PADRAO = {rf:50, fii:10, acao:15, rv:5, ext:10, cripto:10}, BANDA = 5;
 function alvoDe(){ var a = (FIN.cfg && FIN.cfg.alvo) || ALVO_PADRAO; var o = {}; CLASSES.forEach(function(c){ o[c.id] = +a[c.id] || 0; }); return o; }
 function diasDesde(iso){ if(!iso) return null; return Math.floor((agora().getTime() - new Date(iso).getTime()) / 864e5); }
 function sheetAlvo(){
@@ -52,7 +52,11 @@ function sheetInv(a){
     sh.appendChild(el('h3', null, novo ? 'Novo investimento' : 'Editar investimento'));
     var inm = el('input'); inm.type = 'text'; inm.value = a.nome; inm.maxLength = 40; inm.placeholder = 'Ex.: CDB 110% CDI, Tesouro Selic, MXRF11'; inm.addEventListener('input', function(){ a.nome = inm.value; });
     sh.appendChild(campo('Nome', inm, 'inome'));
-    sh.appendChild(el('p', 'mini', 'Classe')); sh.appendChild(chipsDe(CLASSES, a.classe, function(id){ a.classe = id; }, 'ic'));
+    sh.appendChild(el('p', 'mini', 'Classe')); sh.appendChild(chipsDe(CLASSES, a.classe, function(id){ a.classe = id; tickerRow.hidden = !MERCADO[id]; }, 'ic'));
+    var tickerRow = el('div', 'field'); var lt = el('label', null, 'Código (ticker), se tiver'); lt.htmlFor = 'iticker'; var it = el('input'); it.type = 'text'; it.id = 'iticker'; it.value = a.ticker || ''; it.placeholder = 'Ex.: MXRF11, PETR4, IVVB11'; it.setAttribute('list', 'tickers'); it.autocapitalize = 'characters';
+    var dl = el('datalist'); dl.id = 'tickers'; ['fii', 'acao', 'ext'].forEach(function(c){ MERCADO[c].forEach(function(m){ var op = el('option'); op.value = m[0]; op.label = m[1]; dl.appendChild(op); }); });
+    it.addEventListener('change', function(){ a.ticker = it.value.toUpperCase().trim(); var hit = null; ['fii', 'acao', 'ext'].forEach(function(c){ MERCADO[c].forEach(function(m){ if(m[0] === a.ticker) hit = {c:c, m:m}; }); }); if(hit){ if(!a.nome || a.nome === a.ticker) { a.nome = hit.m[0] + ' · ' + hit.m[1]; inm.value = a.nome; } } var lk = linkMercado(a.classe, a.ticker); linkA.hidden = !lk; if(lk) linkA.href = lk; });
+    tickerRow.appendChild(lt); tickerRow.appendChild(it); tickerRow.appendChild(dl); var linkA = el('a', 'linkbtn', 'Ver o ativo no Investidor10 →'); linkA.target = '_blank'; linkA.rel = 'noopener'; var lk0 = linkMercado(a.classe, a.ticker); linkA.hidden = !lk0; if(lk0) linkA.href = lk0; tickerRow.appendChild(linkA); tickerRow.hidden = !MERCADO[a.classe]; sh.appendChild(tickerRow);
     var ii = el('input'); ii.type = 'text'; ii.value = a.inst; ii.maxLength = 30; ii.placeholder = 'Ex.: Nubank, XP, Binance'; ii.addEventListener('input', function(){ a.inst = ii.value; });
     sh.appendChild(campo('Onde está', ii, 'iinst'));
     var g2 = el('div', 'grid2');
@@ -121,12 +125,14 @@ function renderInv(){
     var hd = el('div', 'classhead'); hd.appendChild(el('span', null, g.n)); hd.appendChild(el('span', null, fmt(g.itens.reduce(function(s, a){ return s + (+a.atual || 0); }, 0)))); box.appendChild(hd);
     g.itens.forEach(function(a){
       var b = el('button', 'asset'); b.type = 'button'; b.id = 'inv-' + a.id; b.style.setProperty('--cc', g.c);
-      var dd = el('span'); dd.appendChild(el('span', 't', a.nome)); var ds = diasDesde(a.atualizadoEm), sub = el('span', 's', a.inst ? a.inst + ' · ' : ''); var id2 = el('span', 'idade' + (ds == null ? '' : ds > 90 ? ' bad' : ds > 30 ? ' warn' : ''), ds == null ? 'sem data' : ds === 0 ? 'atualizado hoje' : ds === 1 ? 'atualizado ontem' : 'atualizado há ' + ds + ' dias'); sub.appendChild(id2); dd.appendChild(sub); b.appendChild(dd);
+      var dd = el('span'); dd.appendChild(el('span', 't', a.nome + (a.ticker && a.nome.indexOf(a.ticker) < 0 ? ' · ' + a.ticker : ''))); var ds = diasDesde(a.atualizadoEm), sub = el('span', 's', a.inst ? a.inst + ' · ' : ''); var id2 = el('span', 'idade' + (ds == null ? '' : ds > 90 ? ' bad' : ds > 30 ? ' warn' : ''), ds == null ? 'sem data' : ds === 0 ? 'atualizado hoje' : ds === 1 ? 'atualizado ontem' : 'atualizado há ' + ds + ' dias'); sub.appendChild(id2); dd.appendChild(sub); b.appendChild(dd);
       var v = el('span', 'v', fmt(a.atual)); if(+a.aplicado > 0){ var df = a.atual - a.aplicado; v.appendChild(el('small', df >= 0 ? 'g' : 'r', (df >= 0 ? '+' : '−') + fmt(Math.abs(df)))); } b.appendChild(v);
       b.addEventListener('click', function(){ sheetInv(a); }); box.appendChild(b);
     });
   });
   $('assetsSub').textContent = FIN.inv.length ? 'toca pra editar o valor' : '';
+  renderJogo(); renderSugestao(); renderMercado();
+  if(!aporteVal){ var sg0 = sugestaoMes(); if(sg0.valor > 0) aporteVal = Math.max(0, sg0.valor - sg0.jaFoi); }
   /* checkup */
   var ck = $('checkup'); ck.textContent = ''; ck.appendChild(el('h3', null, 'Checkup da carteira'));
   var alvo = alvoDe(), maior = 0, maiorN = ''; CLASSES.forEach(function(cl){ var v = por[cl.id] || 0; if(v > maior){ maior = v; maiorN = cl.n; } });
@@ -165,11 +171,12 @@ function renderInv(){
     ap.appendChild(lista); ap.appendChild(el('p', 'small', 'Regra: reserva primeiro até 3 meses; depois o dinheiro novo vai pra classe que está mais atrás da meta. Sem vender nada.'));
   } else ap.appendChild(el('p', 'small', 'Digita quanto vai investir este mês e o app diz onde colocar.'));
   var ig = $('invGuide'); ig.textContent = '';
-  var itens = [['Rotativo antes de tudo', 'Dívida de cartão passa de 400% ao ano. Nenhum investimento paga isso. Zera primeiro.'], ['Reserva antes de carteira', 'Meio mês de custo essencial em CDB de liquidez diária ou Tesouro Selic, em conta separada. Depois 3, 6 e 12 meses. Só então renda variável.'], ['Aporte no dia do pró-labore', 'Transferência agendada no mesmo dia que o dinheiro entra. O que fica na conta corrente vira gasto.']];
+  var itens = [['Rotativo antes de tudo', 'Dívida de cartão passa de 400% ao ano. Nenhum investimento paga isso. Zera primeiro.'], ['Reserva antes de carteira', 'Meio mês de custo essencial em CDB de liquidez diária ou Tesouro Selic, em conta separada. Depois 3, 6 e 12 meses. Só então renda variável.'], ['Aporte no dia em que o salário cai', 'Transferência agendada no mesmo dia que o dinheiro entra. O que fica na conta corrente vira gasto.']];
   CLASSES.forEach(function(cl){ itens.push([cl.n, CLASSE_INFO[cl.id]]); });
   itens.forEach(function(x){ var c = el('div', 'step open'); var h = el('div', 'step-head'); h.style.gridTemplateColumns = 'minmax(0,1fr)'; h.appendChild(el('span', 't', x[0])); c.appendChild(h); var bd = el('div', 'step-body'); bd.appendChild(el('p', null, x[1])); c.appendChild(bd); ig.appendChild(c); });
 }
 $('addAsset').addEventListener('click', function(){ sheetInv(); });
+$('addAporte').addEventListener('click', function(){ sheetAporte(); });
 
 /* ===== IMPORTAR CSV ===== */
 function palpiteCat(desc){

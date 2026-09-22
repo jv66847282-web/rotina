@@ -70,6 +70,11 @@
 
   <!-- MAIS -->
   <section class="tab" id="tab-mais" hidden>
+    <div class="sec-head"><h2>Tema</h2></div>
+    <div class="segctl tema" id="temaSeg" role="tablist"><button type="button" role="tab" data-tema="dark" aria-selected="true">Escuro</button><button type="button" role="tab" data-tema="light" aria-selected="false">Claro</button><button type="button" role="tab" data-tema="auto" aria-selected="false">Automático</button></div>
+    <div class="sec-head"><h2>Lembretes</h2><button type="button" class="linkbtn" id="icsBtn">Baixar todos (.ics)</button></div>
+    <p class="note">O app não consegue tocar alarme sozinho. Quem avisa é o Google Agenda: toca em cada bloco pra adicionar como evento que se repete toda semana, já com o seu horário. Pras 2 ou 3 horas que não podem falhar, cria alarme no app Relógio.</p>
+    <div class="orc" id="lembretes"></div>
     <div class="sec-head"><h2>No celular</h2></div>
     <div class="card" id="installCard">
       <h3>Instalar como aplicativo</h3>
@@ -132,6 +137,10 @@
     <div class="sec-head"><h2>Saúde financeira</h2><span id="healthSub"></span></div>
     <div class="health" id="health"></div>
     <div id="finAlerts" style="display:flex;flex-direction:column;gap:8px"></div>
+    <div class="sec-head"><h2>Entrou × essencial × não essencial</h2><span>últimos meses</span></div>
+    <div class="card chart3" id="chart3"></div>
+    <div class="sec-head"><h2>O que dá pra cortar</h2><span id="corteSub"></span></div>
+    <div class="corte" id="corteBox"></div>
     <div class="sec-head"><h2>Onde foi o dinheiro</h2><span id="catSub"></span></div>
     <div id="stackBox"></div>
     <div class="cats" id="cats"></div>
@@ -182,16 +191,20 @@
 <!-- INVESTIR -->
 <section class="tab" id="tab-investir" hidden>
   <div class="sec-head"><h2>Investimentos</h2><span id="invSub"></span></div>
+  <div class="verdict t4" id="jogoCard"></div>
   <div class="hero" id="invHero"></div>
   <div class="card"><div class="donut-wrap"><div class="donut" id="donut"></div><div class="leg" id="donutLeg"></div></div></div>
   <div class="card" id="reservaCard"></div>
   <div class="card" id="checkup"></div>
+  <div class="card" id="sugestaoCard"></div>
   <div class="sec-head"><h2>Meta × real</h2><button type="button" class="linkbtn" id="editAlvo">Editar meta</button></div>
   <div class="card" id="alvoCard"></div>
   <div class="card" id="aporteCard"></div>
   <div class="sec-head"><h2>Ativos</h2><span id="assetsSub"></span></div>
   <div id="assets" style="display:flex;flex-direction:column;gap:6px"></div>
-  <button type="button" class="btn" id="addAsset"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Adicionar investimento</button>
+  <div class="row"><button type="button" class="btn primary" id="addAporte"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Registrar aporte</button><button type="button" class="btn" id="addAsset">Adicionar investimento</button></div>
+  <div class="sec-head"><h2>Referência do mercado</h2><span>pra cadastrar</span></div>
+  <div id="mercado" style="display:flex;flex-direction:column;gap:6px"></div>
   <div class="sec-head"><h2>Antes de investir</h2></div>
   <div class="guide" id="invGuide"></div>
 </section>
