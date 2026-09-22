@@ -204,6 +204,7 @@ function resumo(){
   if(t.fraco) linhas.push('Ponto fraco: ' + nomeDe(t.fraco));
   var dg = DIAG.filter(function(x){ return diag[x.id]; }).map(function(x){ return x.t; });
   linhas.push('Diagnósticos feitos: ' + (dg.length ? dg.join(', ') : 'nenhum'));
+  linhas.push(resumoFin());
   return linhas.join('\n');
 }
 function copiar(txt, ok){
@@ -213,7 +214,7 @@ function copiar(txt, ok){
 }
 $('copyResumo').addEventListener('click', function(){ copiar(resumo()); });
 $('exportBtn').addEventListener('click', function(){
-  var data = JSON.stringify({versao:VERSAO, exportadoEm:new Date().toISOString(), template:T, dias:dias, diag:diag, cfg:cfg});
+  var data = JSON.stringify({versao:VERSAO, exportadoEm:new Date().toISOString(), template:T, dias:dias, diag:diag, cfg:cfg, fin:FIN});
   try{
     var blob = new Blob([data], {type:'application/json'}), a = document.createElement('a');
     a.href = URL.createObjectURL(blob); a.download = 'rotina-backup-' + keyOf(midnight(agora())) + '.json';
@@ -231,16 +232,17 @@ $('importFile').addEventListener('change', function(){
       if(!o || !o.dias) throw new Error('x');
       if(!confirm('Importar o backup de ' + (o.exportadoEm || '?').slice(0, 10) + '? Ele substitui o que está no celular.')) return;
       if(o.template && o.template.util) T = o.template; dias = o.dias || {}; diag = o.diag || {}; cfg = o.cfg || {};
+      if(o.fin && o.fin.orc){ FIN = o.fin; finSave(); }
       salvarT(); salvarDias(); gravar('diag', diag); gravar('cfg', cfg); render(); toast('Backup importado.');
     }catch(e){ toast('Esse arquivo não é um backup válido.'); }
   };
   rd.readAsText(f); this.value = '';
 });
 $('wipeBtn').addEventListener('click', function(){
-  if(!confirm('Apagar TODOS os dias marcados e a rotina personalizada? Não dá pra desfazer.')) return;
+  if(!confirm('Apagar TODOS os dias marcados, a rotina personalizada e as finanças? Não dá pra desfazer.')) return;
   if(!confirm('Certeza? Faz um backup antes se tiver dúvida.')) return;
-  ['template','dias','diag','cfg'].forEach(function(k){ try{ localStorage.removeItem('rotina.v3.' + k); }catch(e){} });
-  carregar(); render(); toast('Tudo apagado.');
+  ['template','dias','diag','cfg','fin'].forEach(function(k){ try{ localStorage.removeItem('rotina.v3.' + k); }catch(e){} });
+  carregar(); finLoad(); render(); toast('Tudo apagado.');
 });
 
 /* ===== instalar (PWA) ===== */
@@ -261,9 +263,21 @@ $('installBtn').addEventListener('click', instalar);
 $('installBtn2').addEventListener('click', instalar);
 $('installLater').addEventListener('click', function(){ try{ sessionStorage.setItem('inst-dep', '1'); }catch(e){} renderInstall(); });
 
+/*FINMARK*/
 /* ===== abas, relogio, boot ===== */
-var TABS = ['hoje','semana','mes','rotina','mais'];
-function render(){ if(tab === 'hoje') renderHoje(); else if(tab === 'semana') renderSemana(); else if(tab === 'mes') renderMes(); else if(tab === 'rotina') renderRotina(); else renderDiag(); renderInstall(); }
+var TABS = ['hoje','placar','financas','investir','mais'], plSeg = 'semana', rotAberta = false;
+function render(){
+  if(tab === 'hoje') renderHoje();
+  else if(tab === 'placar'){ $('pl-sem').hidden = plSeg !== 'semana'; $('pl-m').hidden = plSeg !== 'mes'; $('pl-semana').setAttribute('aria-selected', plSeg === 'semana' ? 'true' : 'false'); $('pl-mes').setAttribute('aria-selected', plSeg === 'mes' ? 'true' : 'false'); if(plSeg === 'semana') renderSemana(); else renderMes(); }
+  else if(tab === 'financas') renderFin();
+  else if(tab === 'investir') renderInv();
+  else { renderDiag(); $('rotBox').hidden = !rotAberta; $('rotToggle').textContent = rotAberta ? 'Fechar' : 'Abrir'; if(rotAberta) renderRotina(); }
+  $('fab').hidden = tab !== 'financas' || finSeg === 'guia';
+  renderInstall();
+}
+$('pl-semana').addEventListener('click', function(){ plSeg = 'semana'; render(); });
+$('pl-mes').addEventListener('click', function(){ plSeg = 'mes'; render(); });
+$('rotToggle').addEventListener('click', function(){ rotAberta = !rotAberta; render(); });
 function setTab(t){
   tab = t;
   TABS.forEach(function(n){ $('tab-' + n).hidden = n !== t; $('tb-' + n).setAttribute('aria-selected', n === t ? 'true' : 'false'); });
@@ -288,7 +302,7 @@ function tick(){
   var b = Math.floor((now.getHours()*60 + now.getMinutes()) / 5);
   if(b !== balde){ balde = b; renderHoje(); } else renderNow();
 }
-carregar();
+carregar(); finLoad();
 $('ver').textContent = 'Rotina v' + VERSAO;
 setTab(TABS.indexOf(abrir) > -1 ? abrir : 'hoje');
 setInterval(tick, 20000);

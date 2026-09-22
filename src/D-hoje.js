@@ -37,7 +37,7 @@ function fase(hoje){
 function coach(r){
   if(!r.conta) return 'Hoje é aquecimento. O placar começa a valer na terça, 22/09.';
   if(!r.total) return 'Dia sem estações. Ajusta a rotina na aba Rotina.';
-  if(r.feito === r.total) return 'Dia cheio. É assim que o Deric de dezembro é construído.';
+  if(r.feito === r.total) return 'Dia cheio. É assim que o João de dezembro é construído.';
   if(r.feito === 0) return 'Dia começando. A primeira vitória é estar de pé às ' + hora(plano(sel)[0] ? plano(sel)[0].s : 420) + '.';
   return r.feito + ' de ' + r.total + '. Continua.';
 }
@@ -48,7 +48,7 @@ function renderHead(){
     var seq = sequencia(), h = now.getHours();
     kk.appendChild(el('span', null, DOW3[sel.getDay()] + ' · ' + sel.getDate() + ' ' + MES3[sel.getMonth()] + ' · ' + fase(hoje)));
     if(seq >= 2){ var f = el('span', 'fire'); f.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c1 4 5 5 5 10a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 2 3 0-3-1-5 1-9z"/></svg>'; f.appendChild(document.createTextNode(seq + ' dias seguidos')); kk.appendChild(f); }
-    $('hello').textContent = (h < 5 ? 'Boa noite' : h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite') + ', Deric.';
+    $('hello').textContent = (h < 5 ? 'Boa noite' : h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite') + ', João.';
     $('sub').textContent = coach(r);
   } else {
     kk.appendChild(el('span', null, r.futuro ? 'ainda não chegou' : 'dia anterior'));

@@ -1,7 +1,7 @@
 <script>
 (function(){
 'use strict';
-var VERSAO = '3.0';
+var VERSAO = '3.1';
 var CONTA_DESDE = new Date(2026, 8, 22);
 var INICIO = new Date(2026, 8, 28);
 var DOW3 = ['dom','seg','ter','qua','qui','sex','sáb'];
@@ -203,7 +203,7 @@ function fr(c, com, sem){ return c.fraco ? com.replace('{f}', nomeDe(c.fraco).to
 var FALA = {
   semana: {
     4: [
-      function(){ return 'Semana de quem manda no próprio dia. É esse Deric que cobra mais caro, entrega sem embolar e sai do aperto. Repete.'; },
+      function(){ return 'Semana de quem manda no próprio dia. É esse João que cobra mais caro, entrega sem embolar e sai do aperto. Repete.'; },
       function(){ return 'Isso separa quem fala que vai mudar de quem muda. Mais algumas iguais a essa e a rotina anda sozinha.'; },
       function(){ return 'Você prometeu e cumpriu. Guarda essa sensação: é ela que te tira da cama às 7h na semana ruim.'; }
     ],
@@ -212,7 +212,7 @@ var FALA = {
       function(c){ return 'Tá no caminho, mas bom é inimigo do ótimo. ' + fr(c, 'O que ainda te derruba: {f}. Resolve isso primeiro.', 'Não relaxa agora.'); }
     ],
     2: [
-      function(c){ return 'Metade de um plano não é plano, é intenção. ' + fr(c, 'O que mais furou: {f}. ', '') + 'O Deric de dezembro está olhando pra essa semana.'; },
+      function(c){ return 'Metade de um plano não é plano, é intenção. ' + fr(c, 'O que mais furou: {f}. ', '') + 'O João de dezembro está olhando pra essa semana.'; },
       function(){ return 'Você cumpre quando é fácil e some quando aperta. É no dia ruim que a rotina se paga. Semana que vem, sem desculpa.'; }
     ],
     1: [
@@ -233,7 +233,7 @@ var FALA = {
     2: ['Ontem foi pela metade. Hoje compensa.'],
     1: ['Ontem você sumiu da própria rotina. Hoje é dia de retorno: começa pelo próximo bloco, agora.']
   },
-  cheio: ['Dia cheio. É assim que o Deric de dezembro é construído.','100%. Guarda essa sensação e repete amanhã.','Fechou o dia inteiro. Isso é constância, não sorte.']
+  cheio: ['Dia cheio. É assim que o João de dezembro é construído.','100%. Guarda essa sensação e repete amanhã.','Fechou o dia inteiro. Isso é constância, não sorte.']
 };
 function escolhe(lista, n){ return lista[Math.abs(n) % lista.length]; }
 function nomes(ids){ return ids.map(function(id){ return nomeDe(id).toLowerCase(); }).join(', '); }
