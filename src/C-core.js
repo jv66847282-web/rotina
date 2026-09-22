@@ -1,7 +1,7 @@
 <script>
 (function(){
 'use strict';
-var VERSAO = '3.4.2';
+var VERSAO = '3.4.3';
 var CONTA_DESDE = new Date(2026, 8, 22);
 var INICIO = new Date(2026, 8, 28);
 var DOW3 = ['dom','seg','ter','qua','qui','sex','sáb'];

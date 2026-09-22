@@ -1,5 +1,5 @@
 /* Rotina: service worker. Guarda o app pra abrir sem internet e pega versao nova quando tem rede. */
-const VERSAO = 'rotina-v3.4.2';
+const VERSAO = 'rotina-v3.4.3';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.v1.png', './icon-512.v1.png', './icon-maskable-192.v1.png', './icon-maskable-512.v1.png'];
 
 self.addEventListener('install', (e) => {
