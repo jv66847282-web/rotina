@@ -18,6 +18,9 @@ function linkMercado(classe, ticker){
 var PTS = {rf:10, fii:20, acao:20, ext:20, rv:15, cripto:5};
 var NIVEIS = [[0, 'Começando'], [100, 'Poupador'], [300, 'Investidor'], [700, 'Estrategista'], [1500, 'Independente']];
 function jogo(){ if(!FIN.jogo) FIN.jogo = {pontos:0, hist:[], meses:{}}; return FIN.jogo; }
+function jogoDesde(){ return (FIN.cfg && FIN.cfg.jogoDesde) || '2026-10'; }
+function jogoAtivo(mk){ return (mk || mesKey(fm)) >= jogoDesde(); }
+function nomeMes(mk){ var p = mk.split('-'); return MESL[+p[1] - 1].toLowerCase() + '/' + p[0]; }
 function nivelDe(p){ var n = NIVEIS[0], prox = null; for(var i = 0; i < NIVEIS.length; i++){ if(p >= NIVEIS[i][0]) n = NIVEIS[i]; else { prox = NIVEIS[i]; break; } } return {nome:n[1], base:n[0], prox:prox}; }
 function darPontos(pts, motivo){ var j = jogo(); j.pontos += pts; j.hist.unshift({data:keyOf(midnight(agora())), pts:pts, motivo:motivo}); j.hist = j.hist.slice(0, 30); }
 function sugestaoMes(){
@@ -42,7 +45,8 @@ function sheetAporte(pre){
       FIN.lanc.push({id:uid(), tipo:'transf', valor:a.valor, desc:'Aporte · ' + at.nome, cat:'transf', conta:(FIN.cfg && FIN.cfg.contaPadrao) || (FIN.contas[0] || {}).id || '', data:a.data, arrep:false, orc:null, aporte:a.id, atualizadoEm:new Date().toISOString()});
       /* regras do jogo */
       var ess = essenciaisMes(), res = reservaTotal(), meses = ess > 0 ? res / ess : 99, pts = 0, msg = '';
-      if(at.reserva){ pts = PTS.rf; msg = 'Reserva primeiro: +' + pts; }
+      if(!jogoAtivo(a.data.slice(0, 7))){ pts = 0; msg = 'Aporte registrado. O jogo começa em ' + nomeMes(jogoDesde()) + '.'; }
+      else if(at.reserva){ pts = PTS.rf; msg = 'Reserva primeiro: +' + pts; }
       else if(meses < 3){ pts = 0; msg = 'Sem pontos: a reserva ainda não chegou a 3 meses. O jogo premia a ordem certa.'; }
       else { pts = PTS[at.classe] || 10; msg = classeDe(at.classe).n + ': +' + pts; }
       if(pts) darPontos(pts, msg);
@@ -65,6 +69,7 @@ var MISSOES = [
 function avaliarMissoes(premiar){
   var j = jogo(), mk = mesKey(fm), c = {aportes:(FIN.aportes || []).filter(function(x){ return x.data && x.data.slice(0, 7) === mk; }), sg:sugestaoMes()};
   j.missoes = j.missoes || {}; var feitas = j.missoes[mk] = j.missoes[mk] || {}, novas = [], st = [];
+  if(!jogoAtivo(mk)) premiar = false;
   MISSOES.forEach(function(m){ var ok = feitas[m.id] || !!m.ok(c); if(ok && !feitas[m.id] && premiar){ feitas[m.id] = true; darPontos(m.pts, m.t + ': +' + m.pts); novas.push(m.t); } st.push({m:m, ok:ok}); });
   var todas = st.every(function(x){ return x.ok; });
   if(todas && !feitas._fase && premiar){ feitas._fase = true; j.fases = (j.fases || 0) + 1; darPontos(50, 'Fase ' + j.fases + ' concluída: +50'); novas.push('fase ' + j.fases + ' concluída'); }
@@ -79,6 +84,8 @@ function renderJogo(){
   /* missoes do mes */
   avaliarMissoes(true);
   var st = avaliarMissoes(false), feitas = st.filter(function(x){ return x.ok; }).length;
+  var ativo = jogoAtivo(); box.classList.toggle('jogo-off', !ativo);
+  if(!ativo){ var off = el('p', 'small'); off.style.opacity = '1'; off.appendChild(document.createTextNode('O jogo começa em ' + nomeMes(jogoDesde()) + '. Até lá, o alvo é zerar o rotativo e montar o colchão. ')); var mud = el('button', 'linkbtn', 'Mudar o início'); mud.type = 'button'; mud.id = 'jogoInicio'; mud.style.padding = '0'; mud.addEventListener('click', function(){ openSheet(function(sh){ sh.appendChild(el('h3', null, 'Quando o jogo começa')); var im = el('input'); im.type = 'month'; im.value = jogoDesde(); sh.appendChild(campo('Mês de início', im, 'jogoMes')); var b = el('button', 'btn primary wide', 'Salvar'); b.type = 'button'; b.id = 'jogoMesSave'; b.addEventListener('click', function(){ if(!/^\d{4}-\d{2}$/.test(im.value)){ toast('Escolhe o mês.'); return; } FIN.cfg = FIN.cfg || {}; FIN.cfg.jogoDesde = im.value; finSave(); closeSheet(); renderInv(); toast('Jogo começa em ' + nomeMes(im.value) + '.'); }); sh.appendChild(b); }); }); off.appendChild(mud); box.appendChild(off); }
   var mh = el('div', 'orc-total'); mh.style.marginTop = '6px'; mh.appendChild(el('span', null, 'Missões de ' + MESL[fm.getMonth()].toLowerCase() + (j.fases ? ' · fase ' + (j.fases + 1) : ' · fase 1'))); mh.appendChild(el('b', null, feitas + ' de ' + st.length)); box.appendChild(mh);
   var segs = el('div', 'segs'); segs.style.gridTemplateColumns = 'repeat(' + st.length + ',minmax(0,1fr))'; st.forEach(function(x){ segs.appendChild(el('i', x.ok ? 'on' : '')); }); box.appendChild(segs);
   var ml = el('ul', 'diag'); ml.style.gap = '4px'; st.forEach(function(x){ var li = el('li'); var row = el('div', 'chk'); var d = el('div', x.ok ? 'ok' : ''); d.appendChild(el('i')); var sp = el('span', null, x.m.t); sp.appendChild(el('small', null, '+' + x.m.pts + (x.ok ? ' ✓' : ''))); d.appendChild(sp); row.appendChild(d); li.appendChild(row); ml.appendChild(li); }); box.appendChild(ml);

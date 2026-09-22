@@ -76,6 +76,9 @@ function sheetInv(a){
   });
 }
 function renderInv(){
+  $('inv-carteira').hidden = invSeg !== 'carteira'; $('inv-aprender').hidden = invSeg !== 'aprender';
+  $('invSegs').querySelectorAll('button').forEach(function(b){ b.setAttribute('aria-selected', b.getAttribute('data-seg') === invSeg ? 'true' : 'false'); });
+  renderGloss();
   var carteira = FIN.inv.filter(function(a){ return !a.reserva; }), total = carteira.reduce(function(s, a){ return s + (+a.atual || 0); }, 0);
   var aplicado = carteira.reduce(function(s, a){ return s + (+a.aplicado || 0); }, 0), res = reservaTotal(), tudo = total + res;
   $('invSub').textContent = FIN.inv.length ? FIN.inv.length + (FIN.inv.length === 1 ? ' ativo' : ' ativos') : '';
@@ -175,6 +178,10 @@ function renderInv(){
   CLASSES.forEach(function(cl){ itens.push([cl.n, CLASSE_INFO[cl.id]]); });
   itens.forEach(function(x){ var c = el('div', 'step open'); var h = el('div', 'step-head'); h.style.gridTemplateColumns = 'minmax(0,1fr)'; h.appendChild(el('span', 't', x[0])); c.appendChild(h); var bd = el('div', 'step-body'); bd.appendChild(el('p', null, x[1])); c.appendChild(bd); ig.appendChild(c); });
 }
+var invSeg = 'carteira';
+$('invSegs').addEventListener('click', function(e){ var b = e.target.closest('button'); if(!b) return; invSeg = b.getAttribute('data-seg'); renderInv(); window.scrollTo(0, 0); });
+var GLOSS = [['CDI', 'Taxa que os bancos usam entre si; anda colada na Selic. "100% do CDI" = rende igual a essa taxa.'], ['Selic', 'A taxa básica de juros do país, definida pelo Banco Central a cada 45 dias. Tudo de renda fixa gira em torno dela.'], ['Tesouro Selic', 'Título do governo que rende a Selic. Liquidez diária, risco mínimo. O padrão da reserva.'], ['CDB', 'Você empresta pro banco e ele te paga juros. Coberto pelo FGC até R$ 250 mil por banco.'], ['FGC', 'Fundo que devolve seu dinheiro (até R$ 250 mil por CPF por banco) se o banco quebrar. Cobre CDB, LCI, LCA, poupança. Não cobre fundos, ações nem Tesouro (que não precisa).'], ['Liquidez', 'Quão rápido o dinheiro volta pra sua conta. Diária = no mesmo dia ou no seguinte. Reserva precisa de liquidez diária.'], ['Marcação a mercado', 'O preço de um título muda todo dia conforme os juros. Se você vende antes do vencimento, pode receber menos do que colocou. Só afeta quem vende antes.'], ['ETF', 'Um fundo negociado em bolsa que compra uma cesta inteira (ex.: as 500 maiores dos EUA). Uma cota, centenas de empresas, taxa baixa.'], ['BDR', 'Recibo negociado na B3 que representa uma ação de fora (Apple, Microsoft). Jeito de ter dólar sem abrir conta fora.'], ['FII', 'Fundo imobiliário: cotas de um fundo que tem imóveis ou títulos imobiliários e distribui aluguel mensal, isento de IR pra pessoa física.'], ['Dividendo / provento', 'Parte do lucro que a empresa ou o fundo distribui pra quem tem a cota. Cai na conta, sem vender nada.'], ['IR regressivo', 'Imposto da renda fixa: 22,5% até 6 meses, caindo até 15% depois de 2 anos. Quanto mais tempo, menos imposto.'], ['Aporte', 'Dinheiro novo que você coloca num investimento. É o que o jogo conta.'], ['Alocação', 'Como a carteira se divide entre as classes. A meta é a divisão que você quer; o real é a de hoje.']];
+function renderGloss(){ var ul = $('gloss'); ul.textContent = ''; GLOSS.forEach(function(g){ var li = el('li'); li.appendChild(el('b', null, g[0])); li.appendChild(el('span', null, g[1])); ul.appendChild(li); }); }
 $('addAsset').addEventListener('click', function(){ sheetInv(); });
 $('addAporte').addEventListener('click', function(){ sheetAporte(); });
 

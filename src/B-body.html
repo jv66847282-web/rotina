@@ -43,7 +43,7 @@
       <div id="editList"></div>
       <button type="button" class="btn primary" id="editDone">Pronto</button>
     </div>
-    <div class="rail" id="rail"></div>
+    <div class="rail2" id="rail"></div>
   </section>
 
   <!-- PLACAR -->
@@ -111,7 +111,8 @@
       <li><span class="se"><em>Se</em>chegou lead novo fora da hora das mensagens</span><span class="entao"><em>então</em>respondo em até 1h.</span></li>
       <li><span class="se"><em>Se</em>deu vontade de comprar algo que não é essencial</span><span class="entao"><em>então</em>anoto e decido na sexta.</span></li>
     </ul>
-    <div class="sec-head"><h2>Diagnóstico</h2><span id="diagCount"></span></div>
+    <div class="sec-head"><h2>Testes pra fazer uma vez</h2><span id="diagCount"></span></div>
+    <p class="note">Cinco medições que ajustam a rotina e as finanças aos SEUS dados, em vez de a uma média. Você faz uma vez, marca aqui e me manda o resultado no check-in de segunda. Com eles eu mexo nos horários e nas metas.</p>
     <ul class="diag" id="diag"></ul>
     <div class="sec-head"><h2>Backup</h2></div>
     <div class="card">
@@ -191,6 +192,8 @@
 <!-- INVESTIR -->
 <section class="tab" id="tab-investir" hidden>
   <div class="sec-head"><h2>Investimentos</h2><span id="invSub"></span></div>
+  <div class="segctl" role="tablist" id="invSegs"><button type="button" role="tab" data-seg="carteira" aria-selected="true">Carteira e jogo</button><button type="button" role="tab" data-seg="aprender" aria-selected="false">Aprender</button></div>
+  <div class="tab" id="inv-carteira">
   <div class="verdict t4" id="jogoCard"></div>
   <div class="hero" id="invHero"></div>
   <div class="card"><div class="donut-wrap"><div class="donut" id="donut"></div><div class="leg" id="donutLeg"></div></div></div>
@@ -205,8 +208,15 @@
   <div class="row"><button type="button" class="btn primary" id="addAporte"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Registrar aporte</button><button type="button" class="btn" id="addAsset">Adicionar investimento</button></div>
   <div class="sec-head"><h2>Referência do mercado</h2><span>pra cadastrar</span></div>
   <div id="mercado" style="display:flex;flex-direction:column;gap:6px"></div>
-  <div class="sec-head"><h2>Antes de investir</h2></div>
+  </div>
+  <div class="tab" id="inv-aprender" hidden>
+  <div class="sec-head"><h2>A ordem certa</h2></div>
+  <ol class="how"><li><b>Rotativo e cheque especial zerados.</b> Juro de três dígitos ao ano; nada rende isso.</li><li><b>Reserva de emergência</b> em Tesouro Selic ou CDB de liquidez diária: meio mês, depois 3, 6 e 12 meses de custo essencial.</li><li><b>Aporte automático</b> no dia em que o salário cai, antes de gastar.</li><li><b>Renda fixa com prazo</b> pra objetivo com data (Tesouro IPCA+, CDB de prazo).</li><li><b>ETF de índice amplo</b> (Ibovespa, S&P 500 via B3) com aporte mensal e horizonte de 5 anos ou mais.</li><li><b>FIIs e ações escolhidas</b> só depois, diversificando.</li><li><b>Cripto</b> por último, pequeno, e só o que você aguenta perder.</li></ol>
+  <div class="sec-head"><h2>Cada classe, sem enrolação</h2></div>
   <div class="guide" id="invGuide"></div>
+  <div class="sec-head"><h2>Glossário</h2></div>
+  <ul class="gloss" id="gloss"></ul>
+  </div>
 </section>
 
 <button type="button" class="fab" id="fab" aria-label="Lançar gasto ou ganho" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>

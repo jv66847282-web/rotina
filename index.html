@@ -179,7 +179,35 @@ button.stop:disabled{cursor:default;opacity:.75}
 .chart3{display:flex;flex-direction:column;gap:8px;color:var(--ink)}.chart3 svg{width:100%;height:auto;display:block;overflow:visible}.chart3 text{font-family:var(--mono);font-size:10px;fill:var(--muted)}.chart3 .leg3{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);font-family:var(--mono)}.chart3 .leg3 i{width:10px;height:10px;border-radius:3px;display:inline-block;margin-right:5px;vertical-align:-1px}
 .corte{display:flex;flex-direction:column;gap:6px}.corte .orc-row{grid-template-columns:minmax(0,1fr) auto auto}.corte .sb b{color:var(--good);font-weight:500}
 .tema{display:grid;grid-template-columns:repeat(3,1fr)}
+.jogo-off{opacity:.55}
+.gloss{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}.gloss li{padding:10px 0;border-bottom:1px solid var(--line);font-size:14.5px}.gloss b{display:block;font-weight:700}.gloss span{color:var(--muted)}
 
+/* linha do dia v2 */
+.rail2{position:relative;display:flex;flex-direction:column;gap:6px;padding-left:2px}
+.rail2::before{content:"";position:absolute;left:19px;top:14px;bottom:14px;width:3px;border-radius:3px;background:linear-gradient(#FFC24B,#FF9A4D 35%,#FF7A66 55%,#F2669F 75%,#A97BFF);opacity:.45}
+.st2{--c:#FFC24B;position:relative;width:100%;display:grid;grid-template-columns:40px minmax(0,1fr) 30px;gap:10px;align-items:center;background:var(--surface);border-radius:18px;padding:12px 12px 12px 0;box-shadow:inset 0 0 0 1px var(--line);text-align:left;transition:transform .12s}
+.st2:active{transform:scale(.985)}
+.st2 .bd{width:38px;height:38px;border-radius:50%;margin-left:1px;display:grid;place-items:center;background:color-mix(in srgb,var(--c) 22%,var(--surface));color:var(--c);position:relative;z-index:1;box-shadow:0 0 0 4px var(--surface)}
+.st2 .bd svg{width:19px;height:19px;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.st2 .tm{font-family:var(--mono);font-size:12px;color:var(--c);letter-spacing:.04em;display:block;margin-bottom:1px}
+.st2 .t{display:block;font-weight:700;font-size:16.5px;line-height:1.2}
+.st2 .d{display:block;font-size:13.5px;color:var(--muted);margin-top:2px}
+.st2 .ck{width:28px;height:28px;border-radius:50%;border:2.5px solid var(--line);display:grid;place-items:center;justify-self:end}
+.st2 .ck svg{width:15px;height:15px;stroke:var(--on-sky);stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round;opacity:0}
+.st2.isnow{box-shadow:inset 0 0 0 2px var(--c);background:linear-gradient(135deg,color-mix(in srgb,var(--c) 14%,var(--surface)),var(--surface) 60%)}
+.st2.isnow .bd{background:var(--c);color:var(--on-sky);box-shadow:0 0 0 4px var(--surface),0 0 0 7px color-mix(in srgb,var(--c) 30%,transparent)}
+.st2.done{opacity:.72}.st2.done .bd{background:var(--good);color:var(--on-sky)}.st2.done .ck{background:var(--good);border-color:var(--good)}.st2.done .ck svg{opacity:1}.st2.done .t{color:var(--muted)}
+.st2.late .ck{border-color:var(--bad)}.st2.delay .ck{border-color:var(--mid)}
+.st2.pop .bd{animation:pop .32s ease}
+.st2:disabled{cursor:default;opacity:.7}
+.ps{--c:#FFC24B;display:grid;grid-template-columns:40px minmax(0,1fr);gap:10px;align-items:center;padding:6px 8px 6px 0;min-height:34px}
+.ps .dot2{width:10px;height:10px;border-radius:50%;background:var(--c);justify-self:center;position:relative;z-index:1;box-shadow:0 0 0 3px var(--bg)}
+.ps .pt{font-size:14px;color:var(--muted);font-weight:500}.ps .pt b{font-family:var(--mono);font-weight:400;font-size:12px;margin-right:8px;color:var(--c)}.ps .pd{display:block;font-size:12.5px;color:var(--muted);opacity:.8}
+.ps.isnow .pt{color:var(--ink)}.ps.isnow .dot2{box-shadow:0 0 0 3px var(--bg),0 0 0 6px color-mix(in srgb,var(--c) 30%,transparent)}
+:root[data-theme="light"] .st2 .bd{box-shadow:0 0 0 4px var(--surface)}
+/* grafico de linhas */
+.chart3 .cmode{display:flex;justify-content:space-between;align-items:center;gap:8px}.chart3 .segctl{width:150px}.chart3 .segctl button{padding:7px 8px;font-size:13px}
+.chart3 .now-line{stroke:var(--muted);stroke-dasharray:3 3;opacity:.6}
 /* modo de ajuste do dia */
 .editbar{display:flex;flex-direction:column;gap:10px;background:var(--surface-2);border-radius:16px;padding:12px 14px}
 .editbar .row{justify-content:space-between}
@@ -541,7 +569,7 @@ details.mais{border-top:1px solid var(--line);padding-top:6px}details.mais summa
       <div id="editList"></div>
       <button type="button" class="btn primary" id="editDone">Pronto</button>
     </div>
-    <div class="rail" id="rail"></div>
+    <div class="rail2" id="rail"></div>
   </section>
 
   <!-- PLACAR -->
@@ -609,7 +637,8 @@ details.mais{border-top:1px solid var(--line);padding-top:6px}details.mais summa
       <li><span class="se"><em>Se</em>chegou lead novo fora da hora das mensagens</span><span class="entao"><em>então</em>respondo em até 1h.</span></li>
       <li><span class="se"><em>Se</em>deu vontade de comprar algo que não é essencial</span><span class="entao"><em>então</em>anoto e decido na sexta.</span></li>
     </ul>
-    <div class="sec-head"><h2>Diagnóstico</h2><span id="diagCount"></span></div>
+    <div class="sec-head"><h2>Testes pra fazer uma vez</h2><span id="diagCount"></span></div>
+    <p class="note">Cinco medições que ajustam a rotina e as finanças aos SEUS dados, em vez de a uma média. Você faz uma vez, marca aqui e me manda o resultado no check-in de segunda. Com eles eu mexo nos horários e nas metas.</p>
     <ul class="diag" id="diag"></ul>
     <div class="sec-head"><h2>Backup</h2></div>
     <div class="card">
@@ -689,6 +718,8 @@ details.mais{border-top:1px solid var(--line);padding-top:6px}details.mais summa
 <!-- INVESTIR -->
 <section class="tab" id="tab-investir" hidden>
   <div class="sec-head"><h2>Investimentos</h2><span id="invSub"></span></div>
+  <div class="segctl" role="tablist" id="invSegs"><button type="button" role="tab" data-seg="carteira" aria-selected="true">Carteira e jogo</button><button type="button" role="tab" data-seg="aprender" aria-selected="false">Aprender</button></div>
+  <div class="tab" id="inv-carteira">
   <div class="verdict t4" id="jogoCard"></div>
   <div class="hero" id="invHero"></div>
   <div class="card"><div class="donut-wrap"><div class="donut" id="donut"></div><div class="leg" id="donutLeg"></div></div></div>
@@ -703,8 +734,15 @@ details.mais{border-top:1px solid var(--line);padding-top:6px}details.mais summa
   <div class="row"><button type="button" class="btn primary" id="addAporte"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Registrar aporte</button><button type="button" class="btn" id="addAsset">Adicionar investimento</button></div>
   <div class="sec-head"><h2>Referência do mercado</h2><span>pra cadastrar</span></div>
   <div id="mercado" style="display:flex;flex-direction:column;gap:6px"></div>
-  <div class="sec-head"><h2>Antes de investir</h2></div>
+  </div>
+  <div class="tab" id="inv-aprender" hidden>
+  <div class="sec-head"><h2>A ordem certa</h2></div>
+  <ol class="how"><li><b>Rotativo e cheque especial zerados.</b> Juro de três dígitos ao ano; nada rende isso.</li><li><b>Reserva de emergência</b> em Tesouro Selic ou CDB de liquidez diária: meio mês, depois 3, 6 e 12 meses de custo essencial.</li><li><b>Aporte automático</b> no dia em que o salário cai, antes de gastar.</li><li><b>Renda fixa com prazo</b> pra objetivo com data (Tesouro IPCA+, CDB de prazo).</li><li><b>ETF de índice amplo</b> (Ibovespa, S&P 500 via B3) com aporte mensal e horizonte de 5 anos ou mais.</li><li><b>FIIs e ações escolhidas</b> só depois, diversificando.</li><li><b>Cripto</b> por último, pequeno, e só o que você aguenta perder.</li></ol>
+  <div class="sec-head"><h2>Cada classe, sem enrolação</h2></div>
   <div class="guide" id="invGuide"></div>
+  <div class="sec-head"><h2>Glossário</h2></div>
+  <ul class="gloss" id="gloss"></ul>
+  </div>
 </section>
 
 <button type="button" class="fab" id="fab" aria-label="Lançar gasto ou ganho" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
@@ -725,7 +763,7 @@ details.mais{border-top:1px solid var(--line);padding-top:6px}details.mais summa
 <script>
 (function(){
 'use strict';
-var VERSAO = '3.3.1';
+var VERSAO = '3.4';
 var CONTA_DESDE = new Date(2026, 8, 22);
 var INICIO = new Date(2026, 8, 28);
 var DOW3 = ['dom','seg','ter','qua','qui','sex','sáb'];
@@ -849,7 +887,7 @@ function plano(date, ignorarOverrides){
   for(var i = 1; i < out.length; i++) if(out[i].s <= out[i-1].s) out[i].s = Math.min(1439, out[i-1].s + (out[i-1].dur || 30));
   for(i = 0; i < out.length; i++){
     out[i].e = i < out.length - 1 ? out[i+1].s : 1440;
-    out[i].check = true;
+    out[i].check = out[i].vale || out[i].opcional;
     var due = 1440;
     for(var j = i + 1; j < out.length; j++) if(out[j].vale){ due = out[j].s; break; }
     out[i].due = due;
@@ -1129,7 +1167,7 @@ function renderNow(){
   var h = Math.floor(falta / 60), mm = falta % 60;
   $('nextIn').textContent = 'em ' + (h ? h + 'h' + (mm ? pad(mm) : '') : mm + ' min');
   var btn = $('nowBtn');
-  nowId = cur.k || null;
+  nowId = cur.check ? cur.k : null;
   btn.hidden = !nowId;
   if(nowId){
     var ok = marcado(dias[keyOf(hoje)], nowId);
@@ -1178,6 +1216,42 @@ function renderProg(){
   else if(r.faltou.length && sel < hoje) msg.textContent = 'Furou: ' + nomes(r.faltou) + '.';
   else { var atras = est.filter(function(b){ return !marcado(rr, b.k) && m >= b.due; }); msg.textContent = atras.length ? 'Sem marcar: ' + nomes(atras.map(function(b){ return b.k; })) + '.' : (r.feito ? 'Em dia até agora.' : 'Toca na estação quando cumprir.'); }
 }
+var ICONES = {
+  sol:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>',
+  cafe:'<svg viewBox="0 0 24 24"><path d="M4 9h12v6a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4z"/><path d="M16 11h2a2 2 0 0 1 0 4h-2M7 3v2M11 3v2"/></svg>',
+  porta:'<svg viewBox="0 0 24 24"><path d="M10 4H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h5M14 8l4 4-4 4M18 12H9"/></svg>',
+  alvo:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2"/></svg>',
+  lista:'<svg viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2"/></svg>',
+  prato:'<svg viewBox="0 0 24 24"><path d="M6 3v7a3 3 0 0 0 3 3v8M9 3v10M12 3v7M17 3c-2 0-3 3-3 6s1 4 3 4v8"/></svg>',
+  chat:'<svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z"/><path d="M8 9h8M8 12h5"/></svg>',
+  halter:'<svg viewBox="0 0 24 24"><path d="M3 10v4M6 8v8M18 8v8M21 10v4M6 12h12"/></svg>',
+  gota:'<svg viewBox="0 0 24 24"><path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/></svg>',
+  livro:'<svg viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19a2 2 0 0 1 2-2h13"/></svg>',
+  aberto:'<svg viewBox="0 0 24 24"><path d="M12 6c-2-2-5-2-9-1v13c4-1 7-1 9 1 2-2 5-2 9-1V5c-4-1-7-1-9 1z"/><path d="M12 6v13"/></svg>',
+  laptop:'<svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="11" rx="2"/><path d="M2 19h20"/></svg>',
+  lua:'<svg viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>',
+  estrela:'<svg viewBox="0 0 24 24"><path d="M12 3l2.4 5.2 5.6.6-4.2 3.9 1.2 5.6L12 15.6 7 18.3l1.2-5.6L4 8.8l5.6-.6z"/></svg>',
+  cama:'<svg viewBox="0 0 24 24"><path d="M3 18V8M3 12h18v6M3 16h18M7 12V9h5v3"/></svg>',
+  ponto:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/></svg>'
+};
+function iconeDe(b){
+  var t = (b.k + ' ' + b.t).toLowerCase();
+  if(b.treino || /academ|trein|corrid|esport/.test(t)) return ICONES.halter;
+  if(/acord|levant|despert/.test(t)) return ICONES.sol;
+  if(/cafe|café/.test(t)) return ICONES.cafe;
+  if(/sair|saída|rua/.test(t)) return ICONES.porta;
+  if(/planej|revis/.test(t)) return ICONES.lista;
+  if(/foco|trabalh|entreg|terminar|profund/.test(t)) return ICONES.alvo;
+  if(/almo|jant|comer|lanche/.test(t)) return ICONES.prato;
+  if(/mensag|whats|rasa|e-mail|email/.test(t)) return ICONES.chat;
+  if(/banho|duch/.test(t)) return ICONES.gota;
+  if(/ler|leitura|livro/.test(t)) return ICONES.aberto;
+  if(/estud|aula|curso/.test(t)) return ICONES.livro;
+  if(/fech|expedient|notebook/.test(t)) return ICONES.laptop;
+  if(/cama|dormir/.test(t)) return ICONES.cama;
+  if(/noite|livre|descans/.test(t)) return ICONES.estrela;
+  return ICONES.ponto;
+}
 function renderRail(){
   var box = $('rail'); box.textContent = '';
   if(editing){ box.hidden = true; return; }
@@ -1186,17 +1260,21 @@ function renderRail(){
   var conta = sel >= CONTA_DESDE, rr = dias[keyOf(sel)], m = now.getHours()*60 + now.getMinutes();
   var L = plano(sel), temAjuste = rr && ((rr.horarios && Object.keys(rr.horarios).length) || (rr.pulados && rr.pulados.length));
   L.forEach(function(b){
-    var reached = passado || (ehHoje && m >= b.s), isnow = ehHoje && m >= b.s && m < b.e;
-    var done = b.check && marcado(rr, b.k);
+    var isnow = ehHoje && m >= b.s && m < b.e;
+    if(!b.check){
+      var ps = el('div', 'ps' + (isnow ? ' isnow' : '')); ps.style.setProperty('--c', sky(b.s));
+      ps.appendChild(el('span', 'dot2'));
+      var pt = el('span', 'pt'); pt.appendChild(el('b', null, hora(b.s))); pt.appendChild(document.createTextNode(b.t)); if(b.d) pt.appendChild(el('span', 'pd', b.d)); ps.appendChild(pt);
+      box.appendChild(ps); return;
+    }
+    var done = marcado(rr, b.k);
     var late = b.vale && !done && conta && (passado || (ehHoje && m >= b.due));
     var delay = late && ehHoje && (m - b.due) < 30;
-    var row = el('button', 'stop' + ((b.vale || b.opcional) ? '' : ' minor') + (reached ? ' reached' : '') + (isnow ? ' isnow' : '') + (done ? ' done' : '') + (late ? (delay ? ' delay' : ' late') : '') + (popId === b.k ? ' pop' : ''));
-    row.style.setProperty('--c', sky(b.s)); row.style.setProperty('--c2', sky(b.e));
-    row.appendChild(el('span', 'time', hora(b.s)));
-    var track = el('span', 'track');
-    var node = el('span', 'node'); node.innerHTML = CHECK; track.appendChild(node);
-    row.appendChild(track);
-    var body = el('span', 'body'), t = el('span', 't', b.t);
+    var row = el('button', 'st2' + (isnow ? ' isnow' : '') + (done ? ' done' : '') + (late ? (delay ? ' delay' : ' late') : '') + (popId === b.k ? ' pop' : ''));
+    row.type = 'button'; row.id = 'st-' + b.k; row.style.setProperty('--c', sky(b.s)); row.setAttribute('aria-pressed', done ? 'true' : 'false');
+    var bd = el('span', 'bd'); bd.innerHTML = done ? CHECK : iconeDe(b); row.appendChild(bd);
+    var body = el('span'); body.appendChild(el('span', 'tm', hora(b.s) + ' – ' + hora(b.e)));
+    var t = el('span', 't', b.t);
     if(late) t.appendChild(el('span', 'tag ' + (delay ? 'delay' : 'late'), passado ? 'furou' : delay ? 'atrasado ' + (m - b.due) + ' min' : 'sem marcar'));
     else if(b.opcional && !done) t.appendChild(el('span', 'tag opt', 'opcional'));
     else if(isnow) t.appendChild(el('span', 'tag nowtag', 'agora'));
@@ -1204,18 +1282,14 @@ function renderRail(){
     body.appendChild(t);
     if(b.d) body.appendChild(el('span', 'd', b.d));
     row.appendChild(body);
-    if(b.check){
-      row.type = 'button'; row.id = 'st-' + b.k;
-      row.setAttribute('aria-pressed', done ? 'true' : 'false');
-      if(futuro) row.disabled = true;
-      row.addEventListener('click', function(){ toggle(sel, b.k); });
-    }
+    var ck = el('span', 'ck'); ck.innerHTML = CHECK; row.appendChild(ck);
+    if(futuro) row.disabled = true;
+    row.addEventListener('click', function(){ toggle(sel, b.k); });
     box.appendChild(row);
   });
   if(temAjuste){ var n = el('p', 'note', 'Horários ajustados só neste dia.'); n.style.marginTop = '8px'; box.appendChild(n); }
   popId = null;
 }
-
 /* modo de ajuste */
 function renderEdit(){
   var bar = $('editbar'); bar.hidden = !editing;
@@ -1441,11 +1515,11 @@ $('tplReset').addEventListener('click', function(){ if(!confirm('Voltar a rotina
 
 /* ===== MAIS ===== */
 var DIAG = [
-  {id:'meq', t:'Cronotipo (questionário MEQ)', s:'5 min. Busque "questionário matutinidade vespertinidade Horne-Östberg".'},
-  {id:'tempo', t:'Auditoria de tempo de 7 dias', s:'Toggl Track ou planilha, mais o tempo de tela do celular.'},
-  {id:'extrato', t:'Raio-x do extrato de 90 dias', s:'Em cada gasto: me arrependo? S ou N.'},
-  {id:'registrato', t:'Registrato, Serasa e Valores a Receber', s:'Mapa oficial das dívidas, grátis. registrato.bcb.gov.br'},
-  {id:'febraban', t:'Índice de Saúde Financeira da Febraban', s:'10 min. indice.febraban.org.br. Refazer em 31/12.'}
+  {id:'meq', t:'Cronotipo (questionário MEQ)', s:'Diz se você é de manhã, de tarde ou de noite. 19 perguntas, 5 min. Busque "questionário matutinidade vespertinidade Horne-Östberg". Resultado: confirma (ou muda) o horário de acordar e o bloco de foco.'},
+  {id:'tempo', t:'Auditoria de tempo de 7 dias', s:'Onde as horas vão de verdade. Toggl Track ou uma planilha de meia em meia hora, mais o Tempo de uso do celular. Resultado: mostra quanto a casa da mãe e o celular comem do dia.'},
+  {id:'extrato', t:'Raio-x do extrato de 90 dias', s:'Lança (ou importa) os gastos dos últimos 90 dias na aba Finanças e marca "me arrependo" em cada um. Resultado: o total de besteira vira a sua mesada semanal.'},
+  {id:'registrato', t:'Registrato, Serasa e Valores a Receber', s:'O mapa oficial das suas dívidas e contas, grátis: registrato.bcb.gov.br (login gov.br), serasa.com.br e valoresareceber.bcb.gov.br. Resultado: a lista de dívidas da Planilha fica completa e em ordem.'},
+  {id:'febraban', t:'Índice de Saúde Financeira da Febraban', s:'Nota de 0 a 100 da sua saúde financeira, 10 min, anônimo: indice.febraban.org.br. Resultado: a linha de partida. Refaz em 31/12 pra ver o quanto andou.'}
 ];
 function renderDiag(){
   var ul = $('diag'); ul.textContent = '';
@@ -1833,38 +1907,43 @@ function renderFinMes(){
   ult.forEach(function(t){ lt.appendChild(txRow(t)); });
 }
 
+var chartModo = 'mes';
 function renderChart3(){
   var box = $('chart3'); box.textContent = '';
-  var meses = [], maxV = 0;
-  for(var i = 5; i >= 0; i--){ var d = new Date(fm.getFullYear(), fm.getMonth() - i, 1), L = lancMes(d), e = 0, n = 0, g = 0; L.forEach(function(t){ if(t.tipo === 'ganho') g += +t.valor || 0; else if(t.tipo === 'gasto'){ if(catDe(t.cat).g === 'ess') e += +t.valor || 0; else n += +t.valor || 0; } }); meses.push({d:d, g:g, e:e, n:n}); }
-  /* so meses com dado (o atual sempre entra) */
-  meses = meses.filter(function(m, k){ return k === meses.length - 1 || m.g || m.e || m.n; });
-  meses.forEach(function(m){ maxV = Math.max(maxV, m.g, m.e, m.n); });
-  if(!maxV){ box.appendChild(el('p', 'empty', 'Sem lançamentos ainda. O gráfico aparece com o primeiro mês.')); return; }
-  var ns = 'http://www.w3.org/2000/svg', W = 360, H = 240, top = 26, base = H - 28, dep = 9, nM = meses.length, gw = W / nM, bw = Math.min(30, (gw - 18 - dep) / 3);
-  var svg = document.createElementNS(ns, 'svg'); svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
-  function tone(hex, f){ var r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16); return 'rgb(' + Math.round(r * f) + ',' + Math.round(g * f) + ',' + Math.round(b * f) + ')'; }
-  function poly(pts, fill, op){ var p = document.createElementNS(ns, 'polygon'); p.setAttribute('points', pts.map(function(q){ return q[0] + ',' + q[1]; }).join(' ')); p.setAttribute('fill', fill); if(op != null) p.style.opacity = op; return p; }
-  /* linhas de grade */
-  for(var gl = 1; gl <= 3; gl++){ var y = base - (base - top) * gl / 3, ln = document.createElementNS(ns, 'line'); ln.setAttribute('x1', 0); ln.setAttribute('x2', W); ln.setAttribute('y1', y); ln.setAttribute('y2', y); ln.setAttribute('stroke', 'currentColor'); ln.style.opacity = '.08'; svg.appendChild(ln); }
-  var chao = document.createElementNS(ns, 'line'); chao.setAttribute('x1', 0); chao.setAttribute('x2', W); chao.setAttribute('y1', base); chao.setAttribute('y2', base); chao.setAttribute('stroke', 'currentColor'); chao.style.opacity = '.25'; svg.appendChild(chao);
-  meses.forEach(function(m, i){
-    var x0 = i * gw + (gw - (3 * bw + 4 + dep)) / 2, atual = same(m.d, fm);
-    [['g', '#3ECF8E'], ['e', '#6F8CFF'], ['n', '#FF6B7A']].forEach(function(k, j){
-      var v = m[k[0]], h = Math.max(v > 0 ? 3 : 0, v / maxV * (base - top)), x = x0 + j * (bw + 2), y = base - h, op = atual ? 1 : .6;
-      if(h > 0){
-        svg.appendChild(poly([[x + bw, y], [x + bw + dep, y - dep], [x + bw + dep, base - dep], [x + bw, base]], tone(k[1], .62), op));
-        svg.appendChild(poly([[x, y], [x + dep, y - dep], [x + bw + dep, y - dep], [x + bw, y]], tone(k[1], 1.18 > 1 ? 1 : 1), op)); 
-        var topo = svg.lastChild; topo.setAttribute('fill', k[1]); topo.style.filter = 'brightness(1.25)';
-        svg.appendChild(poly([[x, y], [x + bw, y], [x + bw, base], [x, base]], k[1], op));
-        if(v > 0 && (atual || nM <= 3)){ var t = document.createElementNS(ns, 'text'); t.setAttribute('x', x + bw / 2 + dep / 2); t.setAttribute('y', y - dep - 4); t.setAttribute('text-anchor', 'middle'); t.textContent = v >= 1000 ? (v / 1000).toLocaleString('pt-BR', {maximumFractionDigits:1}) + 'k' : Math.round(v); t.style.fill = 'var(--ink)'; t.style.fontSize = '10px'; svg.appendChild(t); }
-      }
-    });
-    var lb = document.createElementNS(ns, 'text'); lb.setAttribute('x', i * gw + gw / 2); lb.setAttribute('y', H - 8); lb.setAttribute('text-anchor', 'middle'); lb.textContent = MES3[m.d.getMonth()] + (nM <= 3 ? ' ' + String(m.d.getFullYear()).slice(2) : ''); if(atual) lb.style.fill = 'var(--ink)'; svg.appendChild(lb);
+  var head = el('div', 'cmode'); head.appendChild(el('span', 'small', chartModo === 'mes' ? 'Acumulado, dia a dia' : 'Total por mês'));
+  var seg = el('div', 'segctl'); [['mes', 'Este mês'], ['6m', '6 meses']].forEach(function(o){ var b = el('button', null, o[1]); b.type = 'button'; b.id = 'cm-' + o[0]; b.setAttribute('aria-selected', chartModo === o[0] ? 'true' : 'false'); b.addEventListener('click', function(){ chartModo = o[0]; renderChart3(); }); seg.appendChild(b); }); head.appendChild(seg); box.appendChild(head);
+  var series = [{k:'g', c:'#3ECF8E', n:'Entrou'}, {k:'e', c:'#6F8CFF', n:'Essencial'}, {k:'n', c:'#FF6B7A', n:'Não essencial'}], pts = [], labels = [], marca = null;
+  if(chartModo === 'mes'){
+    var dias = diasNoMes(fm), hoje = diaHoje(fm), L = lancMes(fm), acc = {g:0, e:0, n:0}, porDia = {};
+    L.forEach(function(t){ var dd = +t.data.slice(8, 10), o = porDia[dd] || (porDia[dd] = {g:0, e:0, n:0}); if(t.tipo === 'ganho') o.g += +t.valor || 0; else if(t.tipo === 'gasto'){ if(catDe(t.cat).g === 'ess') o.e += +t.valor || 0; else o.n += +t.valor || 0; } });
+    pts.push({x:0, g:0, e:0, n:0});
+    for(var dd = 1; dd <= dias; dd++){ var o = porDia[dd]; if(o){ acc.g += o.g; acc.e += o.e; acc.n += o.n; } if(dd <= Math.max(hoje, 1) || hoje === 0) pts.push({x:dd, g:acc.g, e:acc.e, n:acc.n}); }
+    for(dd = 1; dd <= dias; dd++) if(dd === 1 || dd % 5 === 0) labels.push({x:dd, t:String(dd)});
+    marca = hoje > 0 && hoje < dias ? hoje : null;
+    var xmax = dias;
+  } else {
+    var xmax = 5;
+    for(var i = 5; i >= 0; i--){ var d = new Date(fm.getFullYear(), fm.getMonth() - i, 1), Lm = lancMes(d), g = 0, e = 0, n = 0; Lm.forEach(function(t){ if(t.tipo === 'ganho') g += +t.valor || 0; else if(t.tipo === 'gasto'){ if(catDe(t.cat).g === 'ess') e += +t.valor || 0; else n += +t.valor || 0; } }); pts.push({x:5 - i, g:g, e:e, n:n}); labels.push({x:5 - i, t:MES3[d.getMonth()]}); }
+  }
+  var maxV = 0; pts.forEach(function(p){ maxV = Math.max(maxV, p.g, p.e, p.n); });
+  if(!maxV){ box.appendChild(el('p', 'empty', 'Sem lançamentos ainda. O gráfico aparece com o primeiro.')); return; }
+  var ns = 'http://www.w3.org/2000/svg', W = 360, H = 210, padL = 8, padR = 44, top = 18, base = H - 26, svg = document.createElementNS(ns, 'svg'); svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+  function X(x){ return padL + x / xmax * (W - padL - padR); } function Y(v){ return base - v / maxV * (base - top); }
+  for(var gl = 1; gl <= 3; gl++){ var y = base - (base - top) * gl / 3, ln = document.createElementNS(ns, 'line'); ln.setAttribute('x1', 0); ln.setAttribute('x2', W); ln.setAttribute('y1', y); ln.setAttribute('y2', y); ln.setAttribute('stroke', 'currentColor'); ln.style.opacity = '.08'; svg.appendChild(ln); var ty = document.createElementNS(ns, 'text'); ty.setAttribute('x', W - 2); ty.setAttribute('y', y - 3); ty.setAttribute('text-anchor', 'end'); ty.textContent = fmtK(maxV * gl / 3).replace('R$ ', ''); ty.style.opacity = '.7'; svg.appendChild(ty); }
+  if(marca){ var ml = document.createElementNS(ns, 'line'); ml.setAttribute('class', 'now-line'); ml.setAttribute('x1', X(marca)); ml.setAttribute('x2', X(marca)); ml.setAttribute('y1', top - 6); ml.setAttribute('y2', base); svg.appendChild(ml); }
+  series.forEach(function(s){
+    var d = '', area = '';
+    pts.forEach(function(p, k){ var cmd = (k ? ' L' : 'M') + X(p.x).toFixed(1) + ' ' + Y(p[s.k]).toFixed(1); d += cmd; });
+    area = d + ' L' + X(pts[pts.length - 1].x).toFixed(1) + ' ' + base + ' L' + X(pts[0].x).toFixed(1) + ' ' + base + ' Z';
+    var ap = document.createElementNS(ns, 'path'); ap.setAttribute('d', area); ap.setAttribute('fill', s.c); ap.style.opacity = '.10'; svg.appendChild(ap);
+    var lp = document.createElementNS(ns, 'path'); lp.setAttribute('d', d); lp.setAttribute('fill', 'none'); lp.setAttribute('stroke', s.c); lp.setAttribute('stroke-width', '2.5'); lp.setAttribute('stroke-linejoin', 'round'); lp.setAttribute('stroke-linecap', 'round'); svg.appendChild(lp);
+    var last = pts[pts.length - 1], c = document.createElementNS(ns, 'circle'); c.setAttribute('cx', X(last.x)); c.setAttribute('cy', Y(last[s.k])); c.setAttribute('r', '4'); c.setAttribute('fill', s.c); c.setAttribute('stroke', 'var(--surface)'); c.setAttribute('stroke-width', '2'); svg.appendChild(c);
+    if(chartModo === '6m') pts.forEach(function(p){ if(p[s.k] > 0){ var c2 = document.createElementNS(ns, 'circle'); c2.setAttribute('cx', X(p.x)); c2.setAttribute('cy', Y(p[s.k])); c2.setAttribute('r', '3'); c2.setAttribute('fill', s.c); svg.appendChild(c2); } });
   });
+  labels.forEach(function(l){ var t = document.createElementNS(ns, 'text'); t.setAttribute('x', X(l.x)); t.setAttribute('y', H - 8); t.setAttribute('text-anchor', 'middle'); t.textContent = l.t; svg.appendChild(t); });
   box.appendChild(svg);
-  var cur = meses[meses.length - 1], lg = el('div', 'leg3'); [['#3ECF8E', 'Entrou ' + fmtK(cur.g)], ['#6F8CFF', 'Essencial ' + fmtK(cur.e)], ['#FF6B7A', 'Não essencial ' + fmtK(cur.n)]].forEach(function(x){ var s = el('span'); var i = el('i'); i.style.background = x[0]; s.appendChild(i); s.appendChild(document.createTextNode(x[1])); lg.appendChild(s); }); box.appendChild(lg);
-  if(cur.g > 0) box.appendChild(el('p', 'small', 'Do que entrou, ' + Math.round(cur.e / cur.g * 100) + '% foi pro essencial e ' + Math.round(cur.n / cur.g * 100) + '% pro não essencial. O vermelho é a parte que você controla.'));
+  var last = pts[pts.length - 1], lg = el('div', 'leg3'); series.forEach(function(s){ var sp = el('span'); var i = el('i'); i.style.background = s.c; sp.appendChild(i); sp.appendChild(document.createTextNode(s.n + ' ' + fmtK(last[s.k]))); lg.appendChild(sp); }); box.appendChild(lg);
+  if(last.g > 0) box.appendChild(el('p', 'small', 'Do que entrou, ' + Math.round(last.e / last.g * 100) + '% foi pro essencial e ' + Math.round(last.n / last.g * 100) + '% pro não essencial. O vermelho é a parte que você controla.'));
 }
 function renderCorte(r){
   var box = $('corteBox'); box.textContent = ''; var itens = [];
@@ -2095,6 +2174,9 @@ function linkMercado(classe, ticker){
 var PTS = {rf:10, fii:20, acao:20, ext:20, rv:15, cripto:5};
 var NIVEIS = [[0, 'Começando'], [100, 'Poupador'], [300, 'Investidor'], [700, 'Estrategista'], [1500, 'Independente']];
 function jogo(){ if(!FIN.jogo) FIN.jogo = {pontos:0, hist:[], meses:{}}; return FIN.jogo; }
+function jogoDesde(){ return (FIN.cfg && FIN.cfg.jogoDesde) || '2026-10'; }
+function jogoAtivo(mk){ return (mk || mesKey(fm)) >= jogoDesde(); }
+function nomeMes(mk){ var p = mk.split('-'); return MESL[+p[1] - 1].toLowerCase() + '/' + p[0]; }
 function nivelDe(p){ var n = NIVEIS[0], prox = null; for(var i = 0; i < NIVEIS.length; i++){ if(p >= NIVEIS[i][0]) n = NIVEIS[i]; else { prox = NIVEIS[i]; break; } } return {nome:n[1], base:n[0], prox:prox}; }
 function darPontos(pts, motivo){ var j = jogo(); j.pontos += pts; j.hist.unshift({data:keyOf(midnight(agora())), pts:pts, motivo:motivo}); j.hist = j.hist.slice(0, 30); }
 function sugestaoMes(){
@@ -2119,7 +2201,8 @@ function sheetAporte(pre){
       FIN.lanc.push({id:uid(), tipo:'transf', valor:a.valor, desc:'Aporte · ' + at.nome, cat:'transf', conta:(FIN.cfg && FIN.cfg.contaPadrao) || (FIN.contas[0] || {}).id || '', data:a.data, arrep:false, orc:null, aporte:a.id, atualizadoEm:new Date().toISOString()});
       /* regras do jogo */
       var ess = essenciaisMes(), res = reservaTotal(), meses = ess > 0 ? res / ess : 99, pts = 0, msg = '';
-      if(at.reserva){ pts = PTS.rf; msg = 'Reserva primeiro: +' + pts; }
+      if(!jogoAtivo(a.data.slice(0, 7))){ pts = 0; msg = 'Aporte registrado. O jogo começa em ' + nomeMes(jogoDesde()) + '.'; }
+      else if(at.reserva){ pts = PTS.rf; msg = 'Reserva primeiro: +' + pts; }
       else if(meses < 3){ pts = 0; msg = 'Sem pontos: a reserva ainda não chegou a 3 meses. O jogo premia a ordem certa.'; }
       else { pts = PTS[at.classe] || 10; msg = classeDe(at.classe).n + ': +' + pts; }
       if(pts) darPontos(pts, msg);
@@ -2142,6 +2225,7 @@ var MISSOES = [
 function avaliarMissoes(premiar){
   var j = jogo(), mk = mesKey(fm), c = {aportes:(FIN.aportes || []).filter(function(x){ return x.data && x.data.slice(0, 7) === mk; }), sg:sugestaoMes()};
   j.missoes = j.missoes || {}; var feitas = j.missoes[mk] = j.missoes[mk] || {}, novas = [], st = [];
+  if(!jogoAtivo(mk)) premiar = false;
   MISSOES.forEach(function(m){ var ok = feitas[m.id] || !!m.ok(c); if(ok && !feitas[m.id] && premiar){ feitas[m.id] = true; darPontos(m.pts, m.t + ': +' + m.pts); novas.push(m.t); } st.push({m:m, ok:ok}); });
   var todas = st.every(function(x){ return x.ok; });
   if(todas && !feitas._fase && premiar){ feitas._fase = true; j.fases = (j.fases || 0) + 1; darPontos(50, 'Fase ' + j.fases + ' concluída: +50'); novas.push('fase ' + j.fases + ' concluída'); }
@@ -2156,6 +2240,8 @@ function renderJogo(){
   /* missoes do mes */
   avaliarMissoes(true);
   var st = avaliarMissoes(false), feitas = st.filter(function(x){ return x.ok; }).length;
+  var ativo = jogoAtivo(); box.classList.toggle('jogo-off', !ativo);
+  if(!ativo){ var off = el('p', 'small'); off.style.opacity = '1'; off.appendChild(document.createTextNode('O jogo começa em ' + nomeMes(jogoDesde()) + '. Até lá, o alvo é zerar o rotativo e montar o colchão. ')); var mud = el('button', 'linkbtn', 'Mudar o início'); mud.type = 'button'; mud.id = 'jogoInicio'; mud.style.padding = '0'; mud.addEventListener('click', function(){ openSheet(function(sh){ sh.appendChild(el('h3', null, 'Quando o jogo começa')); var im = el('input'); im.type = 'month'; im.value = jogoDesde(); sh.appendChild(campo('Mês de início', im, 'jogoMes')); var b = el('button', 'btn primary wide', 'Salvar'); b.type = 'button'; b.id = 'jogoMesSave'; b.addEventListener('click', function(){ if(!/^\d{4}-\d{2}$/.test(im.value)){ toast('Escolhe o mês.'); return; } FIN.cfg = FIN.cfg || {}; FIN.cfg.jogoDesde = im.value; finSave(); closeSheet(); renderInv(); toast('Jogo começa em ' + nomeMes(im.value) + '.'); }); sh.appendChild(b); }); }); off.appendChild(mud); box.appendChild(off); }
   var mh = el('div', 'orc-total'); mh.style.marginTop = '6px'; mh.appendChild(el('span', null, 'Missões de ' + MESL[fm.getMonth()].toLowerCase() + (j.fases ? ' · fase ' + (j.fases + 1) : ' · fase 1'))); mh.appendChild(el('b', null, feitas + ' de ' + st.length)); box.appendChild(mh);
   var segs = el('div', 'segs'); segs.style.gridTemplateColumns = 'repeat(' + st.length + ',minmax(0,1fr))'; st.forEach(function(x){ segs.appendChild(el('i', x.ok ? 'on' : '')); }); box.appendChild(segs);
   var ml = el('ul', 'diag'); ml.style.gap = '4px'; st.forEach(function(x){ var li = el('li'); var row = el('div', 'chk'); var d = el('div', x.ok ? 'ok' : ''); d.appendChild(el('i')); var sp = el('span', null, x.m.t); sp.appendChild(el('small', null, '+' + x.m.pts + (x.ok ? ' ✓' : ''))); d.appendChild(sp); row.appendChild(d); li.appendChild(row); ml.appendChild(li); }); box.appendChild(ml);
@@ -2304,6 +2390,9 @@ function sheetInv(a){
   });
 }
 function renderInv(){
+  $('inv-carteira').hidden = invSeg !== 'carteira'; $('inv-aprender').hidden = invSeg !== 'aprender';
+  $('invSegs').querySelectorAll('button').forEach(function(b){ b.setAttribute('aria-selected', b.getAttribute('data-seg') === invSeg ? 'true' : 'false'); });
+  renderGloss();
   var carteira = FIN.inv.filter(function(a){ return !a.reserva; }), total = carteira.reduce(function(s, a){ return s + (+a.atual || 0); }, 0);
   var aplicado = carteira.reduce(function(s, a){ return s + (+a.aplicado || 0); }, 0), res = reservaTotal(), tudo = total + res;
   $('invSub').textContent = FIN.inv.length ? FIN.inv.length + (FIN.inv.length === 1 ? ' ativo' : ' ativos') : '';
@@ -2403,6 +2492,10 @@ function renderInv(){
   CLASSES.forEach(function(cl){ itens.push([cl.n, CLASSE_INFO[cl.id]]); });
   itens.forEach(function(x){ var c = el('div', 'step open'); var h = el('div', 'step-head'); h.style.gridTemplateColumns = 'minmax(0,1fr)'; h.appendChild(el('span', 't', x[0])); c.appendChild(h); var bd = el('div', 'step-body'); bd.appendChild(el('p', null, x[1])); c.appendChild(bd); ig.appendChild(c); });
 }
+var invSeg = 'carteira';
+$('invSegs').addEventListener('click', function(e){ var b = e.target.closest('button'); if(!b) return; invSeg = b.getAttribute('data-seg'); renderInv(); window.scrollTo(0, 0); });
+var GLOSS = [['CDI', 'Taxa que os bancos usam entre si; anda colada na Selic. "100% do CDI" = rende igual a essa taxa.'], ['Selic', 'A taxa básica de juros do país, definida pelo Banco Central a cada 45 dias. Tudo de renda fixa gira em torno dela.'], ['Tesouro Selic', 'Título do governo que rende a Selic. Liquidez diária, risco mínimo. O padrão da reserva.'], ['CDB', 'Você empresta pro banco e ele te paga juros. Coberto pelo FGC até R$ 250 mil por banco.'], ['FGC', 'Fundo que devolve seu dinheiro (até R$ 250 mil por CPF por banco) se o banco quebrar. Cobre CDB, LCI, LCA, poupança. Não cobre fundos, ações nem Tesouro (que não precisa).'], ['Liquidez', 'Quão rápido o dinheiro volta pra sua conta. Diária = no mesmo dia ou no seguinte. Reserva precisa de liquidez diária.'], ['Marcação a mercado', 'O preço de um título muda todo dia conforme os juros. Se você vende antes do vencimento, pode receber menos do que colocou. Só afeta quem vende antes.'], ['ETF', 'Um fundo negociado em bolsa que compra uma cesta inteira (ex.: as 500 maiores dos EUA). Uma cota, centenas de empresas, taxa baixa.'], ['BDR', 'Recibo negociado na B3 que representa uma ação de fora (Apple, Microsoft). Jeito de ter dólar sem abrir conta fora.'], ['FII', 'Fundo imobiliário: cotas de um fundo que tem imóveis ou títulos imobiliários e distribui aluguel mensal, isento de IR pra pessoa física.'], ['Dividendo / provento', 'Parte do lucro que a empresa ou o fundo distribui pra quem tem a cota. Cai na conta, sem vender nada.'], ['IR regressivo', 'Imposto da renda fixa: 22,5% até 6 meses, caindo até 15% depois de 2 anos. Quanto mais tempo, menos imposto.'], ['Aporte', 'Dinheiro novo que você coloca num investimento. É o que o jogo conta.'], ['Alocação', 'Como a carteira se divide entre as classes. A meta é a divisão que você quer; o real é a de hoje.']];
+function renderGloss(){ var ul = $('gloss'); ul.textContent = ''; GLOSS.forEach(function(g){ var li = el('li'); li.appendChild(el('b', null, g[0])); li.appendChild(el('span', null, g[1])); ul.appendChild(li); }); }
 $('addAsset').addEventListener('click', function(){ sheetInv(); });
 $('addAporte').addEventListener('click', function(){ sheetAporte(); });
 

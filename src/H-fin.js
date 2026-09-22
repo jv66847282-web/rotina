@@ -297,38 +297,43 @@ function renderFinMes(){
   ult.forEach(function(t){ lt.appendChild(txRow(t)); });
 }
 
+var chartModo = 'mes';
 function renderChart3(){
   var box = $('chart3'); box.textContent = '';
-  var meses = [], maxV = 0;
-  for(var i = 5; i >= 0; i--){ var d = new Date(fm.getFullYear(), fm.getMonth() - i, 1), L = lancMes(d), e = 0, n = 0, g = 0; L.forEach(function(t){ if(t.tipo === 'ganho') g += +t.valor || 0; else if(t.tipo === 'gasto'){ if(catDe(t.cat).g === 'ess') e += +t.valor || 0; else n += +t.valor || 0; } }); meses.push({d:d, g:g, e:e, n:n}); }
-  /* so meses com dado (o atual sempre entra) */
-  meses = meses.filter(function(m, k){ return k === meses.length - 1 || m.g || m.e || m.n; });
-  meses.forEach(function(m){ maxV = Math.max(maxV, m.g, m.e, m.n); });
-  if(!maxV){ box.appendChild(el('p', 'empty', 'Sem lançamentos ainda. O gráfico aparece com o primeiro mês.')); return; }
-  var ns = 'http://www.w3.org/2000/svg', W = 360, H = 240, top = 26, base = H - 28, dep = 9, nM = meses.length, gw = W / nM, bw = Math.min(30, (gw - 18 - dep) / 3);
-  var svg = document.createElementNS(ns, 'svg'); svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
-  function tone(hex, f){ var r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16); return 'rgb(' + Math.round(r * f) + ',' + Math.round(g * f) + ',' + Math.round(b * f) + ')'; }
-  function poly(pts, fill, op){ var p = document.createElementNS(ns, 'polygon'); p.setAttribute('points', pts.map(function(q){ return q[0] + ',' + q[1]; }).join(' ')); p.setAttribute('fill', fill); if(op != null) p.style.opacity = op; return p; }
-  /* linhas de grade */
-  for(var gl = 1; gl <= 3; gl++){ var y = base - (base - top) * gl / 3, ln = document.createElementNS(ns, 'line'); ln.setAttribute('x1', 0); ln.setAttribute('x2', W); ln.setAttribute('y1', y); ln.setAttribute('y2', y); ln.setAttribute('stroke', 'currentColor'); ln.style.opacity = '.08'; svg.appendChild(ln); }
-  var chao = document.createElementNS(ns, 'line'); chao.setAttribute('x1', 0); chao.setAttribute('x2', W); chao.setAttribute('y1', base); chao.setAttribute('y2', base); chao.setAttribute('stroke', 'currentColor'); chao.style.opacity = '.25'; svg.appendChild(chao);
-  meses.forEach(function(m, i){
-    var x0 = i * gw + (gw - (3 * bw + 4 + dep)) / 2, atual = same(m.d, fm);
-    [['g', '#3ECF8E'], ['e', '#6F8CFF'], ['n', '#FF6B7A']].forEach(function(k, j){
-      var v = m[k[0]], h = Math.max(v > 0 ? 3 : 0, v / maxV * (base - top)), x = x0 + j * (bw + 2), y = base - h, op = atual ? 1 : .6;
-      if(h > 0){
-        svg.appendChild(poly([[x + bw, y], [x + bw + dep, y - dep], [x + bw + dep, base - dep], [x + bw, base]], tone(k[1], .62), op));
-        svg.appendChild(poly([[x, y], [x + dep, y - dep], [x + bw + dep, y - dep], [x + bw, y]], tone(k[1], 1.18 > 1 ? 1 : 1), op)); 
-        var topo = svg.lastChild; topo.setAttribute('fill', k[1]); topo.style.filter = 'brightness(1.25)';
-        svg.appendChild(poly([[x, y], [x + bw, y], [x + bw, base], [x, base]], k[1], op));
-        if(v > 0 && (atual || nM <= 3)){ var t = document.createElementNS(ns, 'text'); t.setAttribute('x', x + bw / 2 + dep / 2); t.setAttribute('y', y - dep - 4); t.setAttribute('text-anchor', 'middle'); t.textContent = v >= 1000 ? (v / 1000).toLocaleString('pt-BR', {maximumFractionDigits:1}) + 'k' : Math.round(v); t.style.fill = 'var(--ink)'; t.style.fontSize = '10px'; svg.appendChild(t); }
-      }
-    });
-    var lb = document.createElementNS(ns, 'text'); lb.setAttribute('x', i * gw + gw / 2); lb.setAttribute('y', H - 8); lb.setAttribute('text-anchor', 'middle'); lb.textContent = MES3[m.d.getMonth()] + (nM <= 3 ? ' ' + String(m.d.getFullYear()).slice(2) : ''); if(atual) lb.style.fill = 'var(--ink)'; svg.appendChild(lb);
+  var head = el('div', 'cmode'); head.appendChild(el('span', 'small', chartModo === 'mes' ? 'Acumulado, dia a dia' : 'Total por mês'));
+  var seg = el('div', 'segctl'); [['mes', 'Este mês'], ['6m', '6 meses']].forEach(function(o){ var b = el('button', null, o[1]); b.type = 'button'; b.id = 'cm-' + o[0]; b.setAttribute('aria-selected', chartModo === o[0] ? 'true' : 'false'); b.addEventListener('click', function(){ chartModo = o[0]; renderChart3(); }); seg.appendChild(b); }); head.appendChild(seg); box.appendChild(head);
+  var series = [{k:'g', c:'#3ECF8E', n:'Entrou'}, {k:'e', c:'#6F8CFF', n:'Essencial'}, {k:'n', c:'#FF6B7A', n:'Não essencial'}], pts = [], labels = [], marca = null;
+  if(chartModo === 'mes'){
+    var dias = diasNoMes(fm), hoje = diaHoje(fm), L = lancMes(fm), acc = {g:0, e:0, n:0}, porDia = {};
+    L.forEach(function(t){ var dd = +t.data.slice(8, 10), o = porDia[dd] || (porDia[dd] = {g:0, e:0, n:0}); if(t.tipo === 'ganho') o.g += +t.valor || 0; else if(t.tipo === 'gasto'){ if(catDe(t.cat).g === 'ess') o.e += +t.valor || 0; else o.n += +t.valor || 0; } });
+    pts.push({x:0, g:0, e:0, n:0});
+    for(var dd = 1; dd <= dias; dd++){ var o = porDia[dd]; if(o){ acc.g += o.g; acc.e += o.e; acc.n += o.n; } if(dd <= Math.max(hoje, 1) || hoje === 0) pts.push({x:dd, g:acc.g, e:acc.e, n:acc.n}); }
+    for(dd = 1; dd <= dias; dd++) if(dd === 1 || dd % 5 === 0) labels.push({x:dd, t:String(dd)});
+    marca = hoje > 0 && hoje < dias ? hoje : null;
+    var xmax = dias;
+  } else {
+    var xmax = 5;
+    for(var i = 5; i >= 0; i--){ var d = new Date(fm.getFullYear(), fm.getMonth() - i, 1), Lm = lancMes(d), g = 0, e = 0, n = 0; Lm.forEach(function(t){ if(t.tipo === 'ganho') g += +t.valor || 0; else if(t.tipo === 'gasto'){ if(catDe(t.cat).g === 'ess') e += +t.valor || 0; else n += +t.valor || 0; } }); pts.push({x:5 - i, g:g, e:e, n:n}); labels.push({x:5 - i, t:MES3[d.getMonth()]}); }
+  }
+  var maxV = 0; pts.forEach(function(p){ maxV = Math.max(maxV, p.g, p.e, p.n); });
+  if(!maxV){ box.appendChild(el('p', 'empty', 'Sem lançamentos ainda. O gráfico aparece com o primeiro.')); return; }
+  var ns = 'http://www.w3.org/2000/svg', W = 360, H = 210, padL = 8, padR = 44, top = 18, base = H - 26, svg = document.createElementNS(ns, 'svg'); svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+  function X(x){ return padL + x / xmax * (W - padL - padR); } function Y(v){ return base - v / maxV * (base - top); }
+  for(var gl = 1; gl <= 3; gl++){ var y = base - (base - top) * gl / 3, ln = document.createElementNS(ns, 'line'); ln.setAttribute('x1', 0); ln.setAttribute('x2', W); ln.setAttribute('y1', y); ln.setAttribute('y2', y); ln.setAttribute('stroke', 'currentColor'); ln.style.opacity = '.08'; svg.appendChild(ln); var ty = document.createElementNS(ns, 'text'); ty.setAttribute('x', W - 2); ty.setAttribute('y', y - 3); ty.setAttribute('text-anchor', 'end'); ty.textContent = fmtK(maxV * gl / 3).replace('R$ ', ''); ty.style.opacity = '.7'; svg.appendChild(ty); }
+  if(marca){ var ml = document.createElementNS(ns, 'line'); ml.setAttribute('class', 'now-line'); ml.setAttribute('x1', X(marca)); ml.setAttribute('x2', X(marca)); ml.setAttribute('y1', top - 6); ml.setAttribute('y2', base); svg.appendChild(ml); }
+  series.forEach(function(s){
+    var d = '', area = '';
+    pts.forEach(function(p, k){ var cmd = (k ? ' L' : 'M') + X(p.x).toFixed(1) + ' ' + Y(p[s.k]).toFixed(1); d += cmd; });
+    area = d + ' L' + X(pts[pts.length - 1].x).toFixed(1) + ' ' + base + ' L' + X(pts[0].x).toFixed(1) + ' ' + base + ' Z';
+    var ap = document.createElementNS(ns, 'path'); ap.setAttribute('d', area); ap.setAttribute('fill', s.c); ap.style.opacity = '.10'; svg.appendChild(ap);
+    var lp = document.createElementNS(ns, 'path'); lp.setAttribute('d', d); lp.setAttribute('fill', 'none'); lp.setAttribute('stroke', s.c); lp.setAttribute('stroke-width', '2.5'); lp.setAttribute('stroke-linejoin', 'round'); lp.setAttribute('stroke-linecap', 'round'); svg.appendChild(lp);
+    var last = pts[pts.length - 1], c = document.createElementNS(ns, 'circle'); c.setAttribute('cx', X(last.x)); c.setAttribute('cy', Y(last[s.k])); c.setAttribute('r', '4'); c.setAttribute('fill', s.c); c.setAttribute('stroke', 'var(--surface)'); c.setAttribute('stroke-width', '2'); svg.appendChild(c);
+    if(chartModo === '6m') pts.forEach(function(p){ if(p[s.k] > 0){ var c2 = document.createElementNS(ns, 'circle'); c2.setAttribute('cx', X(p.x)); c2.setAttribute('cy', Y(p[s.k])); c2.setAttribute('r', '3'); c2.setAttribute('fill', s.c); svg.appendChild(c2); } });
   });
+  labels.forEach(function(l){ var t = document.createElementNS(ns, 'text'); t.setAttribute('x', X(l.x)); t.setAttribute('y', H - 8); t.setAttribute('text-anchor', 'middle'); t.textContent = l.t; svg.appendChild(t); });
   box.appendChild(svg);
-  var cur = meses[meses.length - 1], lg = el('div', 'leg3'); [['#3ECF8E', 'Entrou ' + fmtK(cur.g)], ['#6F8CFF', 'Essencial ' + fmtK(cur.e)], ['#FF6B7A', 'Não essencial ' + fmtK(cur.n)]].forEach(function(x){ var s = el('span'); var i = el('i'); i.style.background = x[0]; s.appendChild(i); s.appendChild(document.createTextNode(x[1])); lg.appendChild(s); }); box.appendChild(lg);
-  if(cur.g > 0) box.appendChild(el('p', 'small', 'Do que entrou, ' + Math.round(cur.e / cur.g * 100) + '% foi pro essencial e ' + Math.round(cur.n / cur.g * 100) + '% pro não essencial. O vermelho é a parte que você controla.'));
+  var last = pts[pts.length - 1], lg = el('div', 'leg3'); series.forEach(function(s){ var sp = el('span'); var i = el('i'); i.style.background = s.c; sp.appendChild(i); sp.appendChild(document.createTextNode(s.n + ' ' + fmtK(last[s.k]))); lg.appendChild(sp); }); box.appendChild(lg);
+  if(last.g > 0) box.appendChild(el('p', 'small', 'Do que entrou, ' + Math.round(last.e / last.g * 100) + '% foi pro essencial e ' + Math.round(last.n / last.g * 100) + '% pro não essencial. O vermelho é a parte que você controla.'));
 }
 function renderCorte(r){
   var box = $('corteBox'); box.textContent = ''; var itens = [];

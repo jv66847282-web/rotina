@@ -149,7 +149,7 @@ function renderNow(){
   var h = Math.floor(falta / 60), mm = falta % 60;
   $('nextIn').textContent = 'em ' + (h ? h + 'h' + (mm ? pad(mm) : '') : mm + ' min');
   var btn = $('nowBtn');
-  nowId = cur.k || null;
+  nowId = cur.check ? cur.k : null;
   btn.hidden = !nowId;
   if(nowId){
     var ok = marcado(dias[keyOf(hoje)], nowId);
@@ -198,6 +198,42 @@ function renderProg(){
   else if(r.faltou.length && sel < hoje) msg.textContent = 'Furou: ' + nomes(r.faltou) + '.';
   else { var atras = est.filter(function(b){ return !marcado(rr, b.k) && m >= b.due; }); msg.textContent = atras.length ? 'Sem marcar: ' + nomes(atras.map(function(b){ return b.k; })) + '.' : (r.feito ? 'Em dia até agora.' : 'Toca na estação quando cumprir.'); }
 }
+var ICONES = {
+  sol:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>',
+  cafe:'<svg viewBox="0 0 24 24"><path d="M4 9h12v6a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4z"/><path d="M16 11h2a2 2 0 0 1 0 4h-2M7 3v2M11 3v2"/></svg>',
+  porta:'<svg viewBox="0 0 24 24"><path d="M10 4H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h5M14 8l4 4-4 4M18 12H9"/></svg>',
+  alvo:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2"/></svg>',
+  lista:'<svg viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2"/></svg>',
+  prato:'<svg viewBox="0 0 24 24"><path d="M6 3v7a3 3 0 0 0 3 3v8M9 3v10M12 3v7M17 3c-2 0-3 3-3 6s1 4 3 4v8"/></svg>',
+  chat:'<svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z"/><path d="M8 9h8M8 12h5"/></svg>',
+  halter:'<svg viewBox="0 0 24 24"><path d="M3 10v4M6 8v8M18 8v8M21 10v4M6 12h12"/></svg>',
+  gota:'<svg viewBox="0 0 24 24"><path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/></svg>',
+  livro:'<svg viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19a2 2 0 0 1 2-2h13"/></svg>',
+  aberto:'<svg viewBox="0 0 24 24"><path d="M12 6c-2-2-5-2-9-1v13c4-1 7-1 9 1 2-2 5-2 9-1V5c-4-1-7-1-9 1z"/><path d="M12 6v13"/></svg>',
+  laptop:'<svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="11" rx="2"/><path d="M2 19h20"/></svg>',
+  lua:'<svg viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>',
+  estrela:'<svg viewBox="0 0 24 24"><path d="M12 3l2.4 5.2 5.6.6-4.2 3.9 1.2 5.6L12 15.6 7 18.3l1.2-5.6L4 8.8l5.6-.6z"/></svg>',
+  cama:'<svg viewBox="0 0 24 24"><path d="M3 18V8M3 12h18v6M3 16h18M7 12V9h5v3"/></svg>',
+  ponto:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/></svg>'
+};
+function iconeDe(b){
+  var t = (b.k + ' ' + b.t).toLowerCase();
+  if(b.treino || /academ|trein|corrid|esport/.test(t)) return ICONES.halter;
+  if(/acord|levant|despert/.test(t)) return ICONES.sol;
+  if(/cafe|café/.test(t)) return ICONES.cafe;
+  if(/sair|saída|rua/.test(t)) return ICONES.porta;
+  if(/planej|revis/.test(t)) return ICONES.lista;
+  if(/foco|trabalh|entreg|terminar|profund/.test(t)) return ICONES.alvo;
+  if(/almo|jant|comer|lanche/.test(t)) return ICONES.prato;
+  if(/mensag|whats|rasa|e-mail|email/.test(t)) return ICONES.chat;
+  if(/banho|duch/.test(t)) return ICONES.gota;
+  if(/ler|leitura|livro/.test(t)) return ICONES.aberto;
+  if(/estud|aula|curso/.test(t)) return ICONES.livro;
+  if(/fech|expedient|notebook/.test(t)) return ICONES.laptop;
+  if(/cama|dormir/.test(t)) return ICONES.cama;
+  if(/noite|livre|descans/.test(t)) return ICONES.estrela;
+  return ICONES.ponto;
+}
 function renderRail(){
   var box = $('rail'); box.textContent = '';
   if(editing){ box.hidden = true; return; }
@@ -206,17 +242,21 @@ function renderRail(){
   var conta = sel >= CONTA_DESDE, rr = dias[keyOf(sel)], m = now.getHours()*60 + now.getMinutes();
   var L = plano(sel), temAjuste = rr && ((rr.horarios && Object.keys(rr.horarios).length) || (rr.pulados && rr.pulados.length));
   L.forEach(function(b){
-    var reached = passado || (ehHoje && m >= b.s), isnow = ehHoje && m >= b.s && m < b.e;
-    var done = b.check && marcado(rr, b.k);
+    var isnow = ehHoje && m >= b.s && m < b.e;
+    if(!b.check){
+      var ps = el('div', 'ps' + (isnow ? ' isnow' : '')); ps.style.setProperty('--c', sky(b.s));
+      ps.appendChild(el('span', 'dot2'));
+      var pt = el('span', 'pt'); pt.appendChild(el('b', null, hora(b.s))); pt.appendChild(document.createTextNode(b.t)); if(b.d) pt.appendChild(el('span', 'pd', b.d)); ps.appendChild(pt);
+      box.appendChild(ps); return;
+    }
+    var done = marcado(rr, b.k);
     var late = b.vale && !done && conta && (passado || (ehHoje && m >= b.due));
     var delay = late && ehHoje && (m - b.due) < 30;
-    var row = el('button', 'stop' + ((b.vale || b.opcional) ? '' : ' minor') + (reached ? ' reached' : '') + (isnow ? ' isnow' : '') + (done ? ' done' : '') + (late ? (delay ? ' delay' : ' late') : '') + (popId === b.k ? ' pop' : ''));
-    row.style.setProperty('--c', sky(b.s)); row.style.setProperty('--c2', sky(b.e));
-    row.appendChild(el('span', 'time', hora(b.s)));
-    var track = el('span', 'track');
-    var node = el('span', 'node'); node.innerHTML = CHECK; track.appendChild(node);
-    row.appendChild(track);
-    var body = el('span', 'body'), t = el('span', 't', b.t);
+    var row = el('button', 'st2' + (isnow ? ' isnow' : '') + (done ? ' done' : '') + (late ? (delay ? ' delay' : ' late') : '') + (popId === b.k ? ' pop' : ''));
+    row.type = 'button'; row.id = 'st-' + b.k; row.style.setProperty('--c', sky(b.s)); row.setAttribute('aria-pressed', done ? 'true' : 'false');
+    var bd = el('span', 'bd'); bd.innerHTML = done ? CHECK : iconeDe(b); row.appendChild(bd);
+    var body = el('span'); body.appendChild(el('span', 'tm', hora(b.s) + ' – ' + hora(b.e)));
+    var t = el('span', 't', b.t);
     if(late) t.appendChild(el('span', 'tag ' + (delay ? 'delay' : 'late'), passado ? 'furou' : delay ? 'atrasado ' + (m - b.due) + ' min' : 'sem marcar'));
     else if(b.opcional && !done) t.appendChild(el('span', 'tag opt', 'opcional'));
     else if(isnow) t.appendChild(el('span', 'tag nowtag', 'agora'));
@@ -224,18 +264,14 @@ function renderRail(){
     body.appendChild(t);
     if(b.d) body.appendChild(el('span', 'd', b.d));
     row.appendChild(body);
-    if(b.check){
-      row.type = 'button'; row.id = 'st-' + b.k;
-      row.setAttribute('aria-pressed', done ? 'true' : 'false');
-      if(futuro) row.disabled = true;
-      row.addEventListener('click', function(){ toggle(sel, b.k); });
-    }
+    var ck = el('span', 'ck'); ck.innerHTML = CHECK; row.appendChild(ck);
+    if(futuro) row.disabled = true;
+    row.addEventListener('click', function(){ toggle(sel, b.k); });
     box.appendChild(row);
   });
   if(temAjuste){ var n = el('p', 'note', 'Horários ajustados só neste dia.'); n.style.marginTop = '8px'; box.appendChild(n); }
   popId = null;
 }
-
 /* modo de ajuste */
 function renderEdit(){
   var bar = $('editbar'); bar.hidden = !editing;

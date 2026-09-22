@@ -170,11 +170,11 @@ $('tplReset').addEventListener('click', function(){ if(!confirm('Voltar a rotina
 
 /* ===== MAIS ===== */
 var DIAG = [
-  {id:'meq', t:'Cronotipo (questionário MEQ)', s:'5 min. Busque "questionário matutinidade vespertinidade Horne-Östberg".'},
-  {id:'tempo', t:'Auditoria de tempo de 7 dias', s:'Toggl Track ou planilha, mais o tempo de tela do celular.'},
-  {id:'extrato', t:'Raio-x do extrato de 90 dias', s:'Em cada gasto: me arrependo? S ou N.'},
-  {id:'registrato', t:'Registrato, Serasa e Valores a Receber', s:'Mapa oficial das dívidas, grátis. registrato.bcb.gov.br'},
-  {id:'febraban', t:'Índice de Saúde Financeira da Febraban', s:'10 min. indice.febraban.org.br. Refazer em 31/12.'}
+  {id:'meq', t:'Cronotipo (questionário MEQ)', s:'Diz se você é de manhã, de tarde ou de noite. 19 perguntas, 5 min. Busque "questionário matutinidade vespertinidade Horne-Östberg". Resultado: confirma (ou muda) o horário de acordar e o bloco de foco.'},
+  {id:'tempo', t:'Auditoria de tempo de 7 dias', s:'Onde as horas vão de verdade. Toggl Track ou uma planilha de meia em meia hora, mais o Tempo de uso do celular. Resultado: mostra quanto a casa da mãe e o celular comem do dia.'},
+  {id:'extrato', t:'Raio-x do extrato de 90 dias', s:'Lança (ou importa) os gastos dos últimos 90 dias na aba Finanças e marca "me arrependo" em cada um. Resultado: o total de besteira vira a sua mesada semanal.'},
+  {id:'registrato', t:'Registrato, Serasa e Valores a Receber', s:'O mapa oficial das suas dívidas e contas, grátis: registrato.bcb.gov.br (login gov.br), serasa.com.br e valoresareceber.bcb.gov.br. Resultado: a lista de dívidas da Planilha fica completa e em ordem.'},
+  {id:'febraban', t:'Índice de Saúde Financeira da Febraban', s:'Nota de 0 a 100 da sua saúde financeira, 10 min, anônimo: indice.febraban.org.br. Resultado: a linha de partida. Refaz em 31/12 pra ver o quanto andou.'}
 ];
 function renderDiag(){
   var ul = $('diag'); ul.textContent = '';
