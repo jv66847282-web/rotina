@@ -265,7 +265,10 @@ $('installLater').addEventListener('click', function(){ try{ sessionStorage.setI
 
 /*FINMARK*/
 /* ===== abas, relogio, boot ===== */
-var TABS = ['hoje','placar','financas','investir','mais'], plSeg = 'semana', rotAberta = false;
+var TABS = ['hoje','placar','financas','investir','mais'], plSeg = 'semana', rotAberta = true;
+function irEditarRotina(){ rotAberta = true; editing = false; setTab('mais'); setTimeout(function(){ var h = $('rotBox'); if(h) window.scrollTo({top: h.getBoundingClientRect().top + window.scrollY - 70, behavior: 'smooth'}); }, 60); }
+$('editRotina').addEventListener('click', irEditarRotina);
+$('editRotina2').addEventListener('click', irEditarRotina);
 function render(){
   if(tab === 'hoje') renderHoje();
   else if(tab === 'placar'){ $('pl-sem').hidden = plSeg !== 'semana'; $('pl-m').hidden = plSeg !== 'mes'; $('pl-semana').setAttribute('aria-selected', plSeg === 'semana' ? 'true' : 'false'); $('pl-mes').setAttribute('aria-selected', plSeg === 'mes' ? 'true' : 'false'); if(plSeg === 'semana') renderSemana(); else renderMes(); }
