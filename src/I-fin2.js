@@ -1,31 +1,5 @@
 
 /* ===== GUIA ===== */
-var GUIA = [
-  {id:'raiox', t:'Raio-x de 90 dias', o:'Baixa o extrato de 90 dias de todas as contas e das faturas. Lança os gastos aqui (ou importa o CSV no Extrato) e marca "me arrependo" no que não precisava.', why:'Ninguém corta o que não vê. O total marcado como besteira é o seu vazamento, e é ele que vira mesada semanal.', crit:'90 dias lançados e cada gasto avulso com a etiqueta certa.', ev:'convenção'},
-  {id:'planilha', t:'Planilha com o mês fraco', o:'Na aba Planilha, coloca a entrada prevista usando o seu mês FRACO, não o forte. Preenche o valor médio de cada despesa.', why:'Renda variável só cabe num orçamento se ele for feito pro pior cenário. Quem orça pelo mês bom vira dívida no mês ruim.', crit:'Entrada prevista preenchida e "sobra por mês" positiva.', ev:'moderada'},
-  {id:'prolabore', t:'Pró-labore fixo, PJ separado da PF', o:'Define um valor fixo que a agência te paga todo mês no mesmo dia (Pix agendado da conta PJ pra PF). Fora dessa data, nada sai da PJ pra você.', why:'Transforma renda imprevisível em salário previsível. O que sobrar na PJ vira reserva da empresa.', crit:'Pix agendado recorrente criado e primeiro pagamento feito.', ev:'moderada'},
-  {id:'friccao', t:'Tirar a tentação do caminho', o:'Apaga o cartão salvo dos apps de compra e delivery. Desinstala esses apps do celular. Descadastra de todo e-mail e notificação de promoção.', why:'Gente disciplinada não resiste mais: ela evita a tentação. E-mail de promoção aumentou o gasto em 37% em 70 experimentos.', crit:'Nenhum cartão salvo em app de compra e zero e-mail de loja na caixa de entrada.', ev:'forte'},
-  {id:'depois', t:'Lista do Depois (72h)', o:'Deu vontade de comprar algo que não é essencial? Anota o nome e o valor e decide na sexta. Nada de "nunca": é "depois".', why:'Adiar sem data reduziu o desejo mais do que se proibir, em 4 experimentos.', crit:'Uma semana inteira sem compra não essencial no impulso.', ev:'moderada'},
-  {id:'dividas', t:'Dívidas: rotativo e cheque especial primeiro', o:'Consulta o Registrato (Banco Central) e o Serasa. Lista cada dívida com saldo e juros em reais por mês. Rotativo do cartão e cheque especial vêm primeiro, sempre; pede parcelamento ou portabilidade pra uma linha mais barata. Entre dívidas parecidas, ataca a menor.', why:'O rotativo passa de 400% ao ano. Nenhum investimento chega perto disso: pagar essa dívida É o melhor investimento que existe.', crit:'Nenhum saldo em rotativo ou cheque especial.', ev:'forte'},
-  {id:'mesada', t:'Caixinhas e mesada semanal', o:'No dia do pró-labore, um Pix agendado divide o dinheiro em caixinhas: contas fixas, dívida-alvo, exceções e "livre da semana". Toda segunda, só a mesada da semana vai pro cartão virtual.', why:'Dividir cria uma pausa antes de gastar e um marcador de meta. Acabou a mesada, acabou até segunda.', crit:'Caixinhas criadas e mesada da semana definida.', ev:'moderada'},
-  {id:'reserva1', t:'Reserva: 1º degrau', o:'Guarda 1 mês de custo essencial num CDB de liquidez diária (100% do CDI ou mais) ou Tesouro Selic, em OUTRO banco, sem app na tela inicial. Marca esse investimento como "reserva" na aba Investir.', why:'Ter reserva foi o maior preditor de bem-estar financeiro numa pesquisa com 12 mil pessoas. Longe dos olhos, fica.', crit:'Reserva ≥ 1 mês de custo essencial.', ev:'forte'},
-  {id:'revisao', t:'Revisão de sexta, 20 minutos', o:'Toda sexta: saldo das caixinhas, gasto da semana × mesada, Lista do Depois (compra ou apaga), quanto falta da dívida-alvo. Anota os três números e manda pra alguém de confiança.', why:'Monitorar o progresso aumenta a chance de bater a meta (138 estudos). Hora marcada tira a decisão de "olhar ou não".', crit:'4 sextas seguidas com a revisão feita.', ev:'forte'},
-  {id:'reserva6', t:'Reserva: 3 e depois 6 meses', o:'Continua o Pix automático pra reserva até 3 meses de custo essencial. Como a sua renda varia, o alvo final é 6.', why:'Renda variável pede reserva maior: é ela que segura o mês fraco sem virar dívida.', crit:'Reserva ≥ 6 meses de custo essencial.', ev:'convenção'},
-  {id:'investir', t:'Só agora: investir de verdade', o:'Com o rotativo zerado e a reserva no 1º degrau, começa a investir o que sobra, todo mês, no dia do pró-labore. Renda fixa primeiro; renda variável só com o que você aguenta ver cair.', why:'Investir com dívida cara é enxugar gelo. Investir sem reserva vira resgate no primeiro aperto.', crit:'Aporte mensal automático acontecendo há 3 meses.', ev:'moderada'}
-];
-var INDIC = [
-  {t:'Sobra do mês', f:'(entrou − saiu) ÷ entrou', d:'Verde de 20% pra cima. Âmbar entre 10 e 20. Vermelho abaixo de 10. Poupar 20% da renda é a regra prática mais usada; com renda variável, a sobra do mês bom é o colchão do mês fraco.'},
-  {t:'Custo essencial', f:'despesas essenciais da planilha ÷ renda base', d:'Verde até 50%. Âmbar até 70. Vermelho acima. Quanto mais o essencial come, menos sobra pra reserva e menor a margem no mês fraco.'},
-  {t:'Reserva', f:'investimentos marcados como reserva ÷ custo essencial mensal', d:'Vermelho abaixo de 3 meses, âmbar de 3 a 6, verde de 6 pra cima. A planilha do Primo Pobre usa 6 × essenciais; com renda variável, é o mínimo.'},
-  {t:'Besteira', f:'gastos marcados "me arrependo" ÷ entrou', d:'Verde até 5%. Âmbar até 15. Vermelho acima. É o único indicador que depende da sua honestidade na hora de lançar.'}
-];
-var MITOS = [
-  ['"Poupança rende."', 'Rende menos que o CDB de liquidez diária e o Tesouro Selic, os dois com a mesma segurança e liquidez.'],
-  ['"Parcelado sem juros não pesa."', 'Parcelar aumentou o gasto total, não só adiou. E parcelado com juros do cartão passou de 200% ao ano.'],
-  ['"É só ganhar mais."', 'Ter reserva mínima esteve mais ligada ao bem-estar financeiro do que renda alta. Ganhar mais sem estrutura vira gasto.'],
-  ['"Bitcoin é reserva."', 'Reserva é o que não pode cair pela metade no mês em que você precisa dela. Cripto pode.'],
-  ['"Todo delivery é desperdício."', 'Gastar pra comprar tempo está ligado a mais satisfação. O corte é no que você marca como arrependimento, não em toda conveniência.']
-];
 function renderGuia(){
   var box = $('guide'); box.textContent = ''; var ok = 0;
   GUIA.forEach(function(g, i){
@@ -54,7 +28,24 @@ function renderGuia(){
 }
 
 /* ===== INVESTIR ===== */
-var invSel = null;
+var invSel = null, aporteVal = 0;
+var ALVO_PADRAO = {rf:60, fii:10, acao:15, rv:5, cripto:10}, BANDA = 5;
+function alvoDe(){ var a = (FIN.cfg && FIN.cfg.alvo) || ALVO_PADRAO; var o = {}; CLASSES.forEach(function(c){ o[c.id] = +a[c.id] || 0; }); return o; }
+function diasDesde(iso){ if(!iso) return null; return Math.floor((agora().getTime() - new Date(iso).getTime()) / 864e5); }
+function sheetAlvo(){
+  var a = alvoDe();
+  openSheet(function(sh){
+    sh.appendChild(el('h3', null, 'Meta de alocação'));
+    sh.appendChild(el('p', 'mini', 'Quanto de cada classe você quer na carteira (fora a reserva). Tem que somar 100%. Tolerância de ' + BANDA + ' pontos pra cada lado antes de acusar desvio.'));
+    var soma = el('p', 'mini'); function upd(){ var t = 0; CLASSES.forEach(function(c){ t += +a[c.id] || 0; }); soma.textContent = 'Soma: ' + t + '%' + (t === 100 ? ' ✓' : ' (precisa dar 100)'); soma.style.color = t === 100 ? 'var(--good)' : 'var(--bad)'; return t; }
+    CLASSES.forEach(function(c){ var i = el('input'); i.type = 'number'; i.min = 0; i.max = 100; i.step = 5; i.inputMode = 'numeric'; i.value = a[c.id]; i.addEventListener('input', function(){ a[c.id] = Math.max(0, Math.min(100, +i.value || 0)); upd(); }); sh.appendChild(campo(c.n + ' (%)', i, 'alvo-' + c.id)); });
+    sh.appendChild(soma); upd();
+    var b = el('button', 'btn primary wide', 'Salvar meta'); b.type = 'button'; b.id = 'alvoSave';
+    b.addEventListener('click', function(){ if(upd() !== 100){ toast('A soma precisa dar 100%.'); return; } FIN.cfg = FIN.cfg || {}; FIN.cfg.alvo = a; finSave(); closeSheet(); renderInv(); toast('Meta salva.'); });
+    sh.appendChild(b);
+  });
+}
+$('editAlvo').addEventListener('click', sheetAlvo);
 function sheetInv(a){
   var novo = !a; a = a ? clone(a) : {id:uid(), nome:'', classe:'rf', inst:'', aplicado:0, atual:0, reserva:false};
   openSheet(function(sh){
@@ -130,13 +121,53 @@ function renderInv(){
     var hd = el('div', 'classhead'); hd.appendChild(el('span', null, g.n)); hd.appendChild(el('span', null, fmt(g.itens.reduce(function(s, a){ return s + (+a.atual || 0); }, 0)))); box.appendChild(hd);
     g.itens.forEach(function(a){
       var b = el('button', 'asset'); b.type = 'button'; b.id = 'inv-' + a.id; b.style.setProperty('--cc', g.c);
-      var dd = el('span'); dd.appendChild(el('span', 't', a.nome)); dd.appendChild(el('span', 's', (a.inst ? a.inst + ' · ' : '') + 'atualizado ' + (a.atualizadoEm ? dataBR(a.atualizadoEm.slice(0, 10)) : '–'))); b.appendChild(dd);
+      var dd = el('span'); dd.appendChild(el('span', 't', a.nome)); var ds = diasDesde(a.atualizadoEm), sub = el('span', 's', a.inst ? a.inst + ' · ' : ''); var id2 = el('span', 'idade' + (ds == null ? '' : ds > 90 ? ' bad' : ds > 30 ? ' warn' : ''), ds == null ? 'sem data' : ds === 0 ? 'atualizado hoje' : ds === 1 ? 'atualizado ontem' : 'atualizado há ' + ds + ' dias'); sub.appendChild(id2); dd.appendChild(sub); b.appendChild(dd);
       var v = el('span', 'v', fmt(a.atual)); if(+a.aplicado > 0){ var df = a.atual - a.aplicado; v.appendChild(el('small', df >= 0 ? 'g' : 'r', (df >= 0 ? '+' : '−') + fmt(Math.abs(df)))); } b.appendChild(v);
       b.addEventListener('click', function(){ sheetInv(a); }); box.appendChild(b);
     });
   });
+  $('assetsSub').textContent = FIN.inv.length ? 'toca pra editar o valor' : '';
+  /* checkup */
+  var ck = $('checkup'); ck.textContent = ''; ck.appendChild(el('h3', null, 'Checkup da carteira'));
+  var alvo = alvoDe(), maior = 0, maiorN = ''; CLASSES.forEach(function(cl){ var v = por[cl.id] || 0; if(v > maior){ maior = v; maiorN = cl.n; } });
+  var maiorPct = total ? maior / total * 100 : 0, criptoPct = total ? (por.cripto || 0) / total * 100 : 0, mesesRes = ess > 0 ? res / ess : null;
+  var maxDias = 0; FIN.inv.forEach(function(a){ var d0 = diasDesde(a.atualizadoEm); if(d0 != null && d0 > maxDias) maxDias = d0; });
+  var checks = [
+    {f: mesesRes == null ? 'na' : mesesRes >= 3 ? 'ok' : mesesRes >= 1 ? 'mid' : 'bad', t: mesesRes == null ? 'Reserva: preenche as despesas essenciais na Planilha.' : 'Reserva cobre ' + mesesRes.toFixed(1).replace('.', ',') + ' meses.', s: mesesRes == null ? '' : mesesRes >= 3 ? 'Bom. Alvo final: 6.' : 'Meta 3 meses: faltam ' + fmt(Math.max(0, ess * 3 - res)) + '. Aporte vai aqui primeiro.'},
+    {f: !total ? 'na' : maiorPct <= 70 ? 'ok' : maiorPct <= 85 ? 'mid' : 'bad', t: !total ? 'Carteira vazia.' : maiorN + ' é ' + Math.round(maiorPct) + '% da carteira.', s: !total ? '' : maiorPct <= 70 ? 'Concentração ok.' : 'Concentrado demais numa classe só.'},
+    {f: !total ? 'na' : criptoPct <= alvo.cripto + BANDA ? 'ok' : criptoPct <= alvo.cripto + 2 * BANDA ? 'mid' : 'bad', t: 'Cripto em ' + Math.round(criptoPct) + '% (meta ' + alvo.cripto + '%).', s: criptoPct <= alvo.cripto + BANDA ? 'Dentro da faixa.' : 'Acima da meta: não aporta mais aqui até equilibrar.'},
+    {f: !FIN.inv.length ? 'na' : maxDias <= 30 ? 'ok' : maxDias <= 90 ? 'mid' : 'bad', t: !FIN.inv.length ? 'Sem ativos.' : 'Valor mais antigo: ' + maxDias + (maxDias === 1 ? ' dia' : ' dias') + ' sem atualizar.', s: maxDias <= 30 ? 'Carteira em dia.' : 'Abre o app do banco e atualiza os valores. Número velho parece número certo.'}
+  ];
+  var cb2 = el('div', 'chk'); checks.forEach(function(c){ var d = el('div', c.f); d.appendChild(el('i')); var sp = el('span', null, c.t); if(c.s) sp.appendChild(el('small', null, c.s)); d.appendChild(sp); cb2.appendChild(d); }); ck.appendChild(cb2);
+  /* alvo x real */
+  var ac = $('alvoCard'); ac.textContent = ''; var al = el('div', 'alvo');
+  CLASSES.forEach(function(cl){
+    var v = por[cl.id] || 0, real = total ? v / total * 100 : 0, meta = alvo[cl.id], diff = real - meta, stt = Math.abs(diff) <= BANDA ? 'ok' : diff < 0 ? 'falta' : 'sobra';
+    var row = el('div', 'alvo-row'); row.style.setProperty('--cc', cl.c);
+    var n = el('span', 'n'); n.appendChild(el('i')); n.appendChild(document.createTextNode(cl.n)); n.appendChild(el('span', 'st ' + stt, stt === 'ok' ? 'na meta' : stt === 'falta' ? 'falta ' + Math.round(-diff) + ' pts' : 'sobra ' + Math.round(diff) + ' pts')); row.appendChild(n);
+    var s = el('span', 's'); s.appendChild(el('b', null, Math.round(real) + '%')); s.appendChild(document.createTextNode(' / meta ' + meta + '%')); row.appendChild(s);
+    var bar = el('div', 'bar2'), f = el('span'); f.style.width = Math.min(100, real) + '%'; bar.appendChild(f);
+    var band = el('em'); band.style.left = Math.max(0, meta - BANDA) + '%'; band.style.width = (Math.min(100, meta + BANDA) - Math.max(0, meta - BANDA)) + '%'; bar.appendChild(band);
+    var mk = el('i'); mk.style.left = meta + '%'; bar.appendChild(mk); row.appendChild(bar); al.appendChild(row);
+  });
+  ac.appendChild(al); ac.appendChild(el('p', 'small', 'A marca é a meta; a faixa clara é a tolerância de ' + BANDA + ' pontos. Você não vende pra ajustar: manda o dinheiro novo pra onde falta.'));
+  /* onde aportar */
+  var ap = $('aporteCard'); ap.textContent = ''; ap.appendChild(el('h3', null, 'Onde aportar este mês'));
+  var am = el('div', 'amount'); am.appendChild(el('span', null, 'R$')); var ia = el('input'); ia.type = 'text'; ia.inputMode = 'decimal'; ia.id = 'aporteIn'; ia.placeholder = '0,00'; ia.value = aporteVal ? aporteVal.toLocaleString('pt-BR', {minimumFractionDigits:2}) : ''; ia.setAttribute('aria-label', 'Valor do aporte'); ia.addEventListener('change', function(){ aporteVal = parseBRL(ia.value); renderInv(); }); am.appendChild(ia); ap.appendChild(am);
+  if(aporteVal > 0){
+    var lista = el('div', 'aporte'), resto = aporteVal;
+    if(ess > 0 && res < ess * 3){ var pr = Math.min(resto, ess * 3 - res); var d1 = el('div', 'dest'); d1.appendChild(el('span', null, 'Reserva de emergência (até 3 meses)')); d1.appendChild(el('b', null, fmt(pr))); lista.appendChild(d1); resto -= pr; }
+    if(resto > 0){
+      var tot2 = total + resto, gaps = {}, soma = 0; CLASSES.forEach(function(cl){ var g = alvo[cl.id] / 100 * tot2 - (por[cl.id] || 0); if(g > 0){ gaps[cl.id] = g; soma += g; } });
+      CLASSES.forEach(function(cl){ if(!gaps[cl.id]) return; var v = resto * gaps[cl.id] / soma; var d2 = el('div', 'dest'); d2.appendChild(el('span', null, cl.n)); d2.appendChild(el('b', null, fmt(v))); lista.appendChild(d2); });
+      if(!soma){ var d3 = el('div', 'dest'); d3.appendChild(el('span', null, 'Tudo na meta: divide na proporção da meta')); d3.appendChild(el('b', null, fmt(resto))); lista.appendChild(d3); }
+    }
+    ap.appendChild(lista); ap.appendChild(el('p', 'small', 'Regra: reserva primeiro até 3 meses; depois o dinheiro novo vai pra classe que está mais atrás da meta. Sem vender nada.'));
+  } else ap.appendChild(el('p', 'small', 'Digita quanto vai investir este mês e o app diz onde colocar.'));
   var ig = $('invGuide'); ig.textContent = '';
-  [['Rotativo antes de tudo', 'Dívida de cartão passa de 400% ao ano. Nenhum investimento paga isso. Zera primeiro.'], ['Reserva antes de carteira', 'Um mês de custo essencial em CDB de liquidez diária ou Tesouro Selic, em outro banco. Só depois entra renda variável.'], ['Aporte no dia do pró-labore', 'Pix automático no mesmo dia que o dinheiro entra. O que fica na conta corrente vira gasto.'], ['Cripto é aposta, não reserva', 'Só o que você aguenta ver cair pela metade sem mexer na sua vida.']].forEach(function(x){ var c = el('div', 'step open'); var h = el('div', 'step-head'); h.style.gridTemplateColumns = 'minmax(0,1fr)'; h.appendChild(el('span', 't', x[0])); c.appendChild(h); var bd = el('div', 'step-body'); bd.appendChild(el('p', null, x[1])); c.appendChild(bd); ig.appendChild(c); });
+  var itens = [['Rotativo antes de tudo', 'Dívida de cartão passa de 400% ao ano. Nenhum investimento paga isso. Zera primeiro.'], ['Reserva antes de carteira', 'Meio mês de custo essencial em CDB de liquidez diária ou Tesouro Selic, em conta separada. Depois 3, 6 e 12 meses. Só então renda variável.'], ['Aporte no dia do pró-labore', 'Transferência agendada no mesmo dia que o dinheiro entra. O que fica na conta corrente vira gasto.']];
+  CLASSES.forEach(function(cl){ itens.push([cl.n, CLASSE_INFO[cl.id]]); });
+  itens.forEach(function(x){ var c = el('div', 'step open'); var h = el('div', 'step-head'); h.style.gridTemplateColumns = 'minmax(0,1fr)'; h.appendChild(el('span', 't', x[0])); c.appendChild(h); var bd = el('div', 'step-body'); bd.appendChild(el('p', null, x[1])); c.appendChild(bd); ig.appendChild(c); });
 }
 $('addAsset').addEventListener('click', function(){ sheetInv(); });
 
@@ -218,6 +249,7 @@ function resumoFin(){
   var top = Object.keys(por).sort(function(a, b){ return por[b] - por[a]; }).slice(0, 3).map(function(id){ return catDe(id).n + ' ' + fmt(por[id]); });
   if(top.length) L.push('Top gastos: ' + top.join(' · '));
   var cortes = FIN.orc.ess.concat(FIN.orc.nao).filter(function(o){ return o.cortadoEm; });
+  if(FIN.dividas && FIN.dividas.length){ var dv = dividasMes(); L.push('Dívidas: ' + FIN.dividas.length + ' · total ' + fmt(dv.saldo) + ' · parcelas ' + fmt(dv.parcelas) + '/mês' + (dv.rotativo ? ' · ROTATIVO' : '')); }
   if(cortes.length) L.push('Cortado da planilha: ' + fmt(cortes.reduce(function(a, o){ return a + (+o.valor || 0); }, 0)) + '/mês (' + cortes.map(function(o){ return o.nome; }).join(', ') + ')');
   var g = GUIA.filter(function(x){ return FIN.guia[x.id]; }).length; L.push('Guia: ' + g + ' de ' + GUIA.length + ' passos');
   return L.join('\n');

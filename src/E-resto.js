@@ -308,6 +308,7 @@ function tick(){
 carregar(); finLoad();
 $('ver').textContent = 'Rotina v' + VERSAO;
 setTab(TABS.indexOf(abrir) > -1 ? abrir : 'hoje');
+try{ if(new URLSearchParams(location.search).get('acao') === 'lancar'){ setTab('financas'); setTimeout(function(){ sheetLanc(); }, 150); history.replaceState(null, '', location.pathname); } }catch(e){}
 setInterval(tick, 20000);
 document.addEventListener('visibilitychange', function(){ if(!document.hidden) tick(); });
 if(navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(function(){});
