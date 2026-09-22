@@ -1,7 +1,7 @@
 <script>
 (function(){
 'use strict';
-var VERSAO = '3.4';
+var VERSAO = '3.4.1';
 var CONTA_DESDE = new Date(2026, 8, 22);
 var INICIO = new Date(2026, 8, 28);
 var DOW3 = ['dom','seg','ter','qua','qui','sex','sáb'];
@@ -12,11 +12,11 @@ var CHECK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.
 var QUANDO = [['sempre','Todo dia'],['treino','Só dia de treino'],['semtreino','Só dia sem treino'],['seg','Só segunda'],['sex','Só sexta'],['sab','Só sábado'],['dom','Só domingo']];
 
 /* relogio (?hoje=2026-10-14T10:20 pra testar) */
-var t0 = Date.now(), fake = null, abrir = null;
+var t0 = Date.now(), fake = null, abrir = null, DEMO = false;
 try{
   var qs = new URLSearchParams(location.search);
   var q = qs.get('hoje'); if(q){ var f = new Date(q); if(!isNaN(f.getTime())) fake = f.getTime(); }
-  abrir = qs.get('tab');
+  abrir = qs.get('tab'); DEMO = qs.get('demo') === '1';
 }catch(e){}
 function agora(){ return fake ? new Date(fake + (Date.now() - t0)) : new Date(); }
 
@@ -87,8 +87,9 @@ var T = null, dias = {}, diag = {}, cfg = {};
 var sel = midnight(agora()), tab = 'hoje', popId = null, editing = false, tplLista = 'util';
 var wk = monday(midnight(agora())), mo = new Date(agora().getFullYear(), agora().getMonth(), 1), picked = null;
 
-function ler(k, def){ try{ var v = localStorage.getItem('rotina.v3.' + k); return v ? JSON.parse(v) : def; }catch(e){ return def; } }
-function gravar(k, v){ try{ localStorage.setItem('rotina.v3.' + k, JSON.stringify(v)); }catch(e){ toast('Não consegui salvar. Está sem espaço?'); } }
+function pref(){ return DEMO ? 'rotina.demo.' : 'rotina.v3.'; }
+function ler(k, def){ try{ var v = localStorage.getItem(pref() + k); return v ? JSON.parse(v) : def; }catch(e){ return def; } }
+function gravar(k, v){ try{ localStorage.setItem(pref() + k, JSON.stringify(v)); }catch(e){ toast('Não consegui salvar. Está sem espaço?'); } }
 function carregar(){
   T = ler('template', null);
   if(!T || !T.util || !T.fds){ T = rotinaOriginal(); }

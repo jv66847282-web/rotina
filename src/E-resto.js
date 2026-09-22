@@ -241,7 +241,7 @@ $('importFile').addEventListener('change', function(){
 $('wipeBtn').addEventListener('click', function(){
   if(!confirm('Apagar TODOS os dias marcados, a rotina personalizada e as finanças? Não dá pra desfazer.')) return;
   if(!confirm('Certeza? Faz um backup antes se tiver dúvida.')) return;
-  ['template','dias','diag','cfg','fin'].forEach(function(k){ try{ localStorage.removeItem('rotina.v3.' + k); }catch(e){} });
+  ['template','dias','diag','cfg','fin','demo-ok'].forEach(function(k){ try{ localStorage.removeItem(pref() + k); }catch(e){} });
   carregar(); finLoad(); render(); toast('Tudo apagado.');
 });
 
@@ -306,6 +306,7 @@ function tick(){
   if(b !== balde){ balde = b; renderHoje(); } else renderNow();
 }
 carregar(); finLoad();
+if(DEMO){ if(!ler('demo-ok', false)) demoSeed(); var dm = el('div', 'save'); dm.textContent = 'DEMO · dados de exemplo'; dm.style.cssText = 'display:block;left:12px;right:auto;background:var(--mid);color:var(--on-sky);font-weight:600'; document.body.appendChild(dm); }
 aplicarTema(temaAtual());
 $('temaSeg').addEventListener('click', function(e){ var b = e.target.closest('button'); if(!b) return; var t = b.getAttribute('data-tema'); try{ localStorage.setItem('rotina.v3.tema', t); }catch(x){} aplicarTema(t); toast(t === 'light' ? 'Tema claro.' : t === 'dark' ? 'Tema escuro.' : 'Segue o celular.'); });
 if(window.matchMedia) try{ window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', function(){ if(temaAtual() === 'auto') aplicarTema('auto'); }); }catch(e){}
