@@ -250,7 +250,7 @@ function renderFin(){
   $('finSegs').querySelectorAll('button').forEach(function(b){ b.setAttribute('aria-selected', b.getAttribute('data-seg') === finSeg ? 'true' : 'false'); });
   if(finSeg === 'mes') renderFinMes(); else if(finSeg === 'extrato') renderExtrato(); else if(finSeg === 'planilha') renderPlanilha(); else if(finSeg === 'contas') renderContas(); else renderGuia();
 }
-$('finSegs').addEventListener('click', function(e){ var b = e.target.closest('button'); if(!b) return; finSeg = b.getAttribute('data-seg'); renderFin(); window.scrollTo(0, 0); });
+$('finSegs').addEventListener('click', function(e){ var b = e.target.closest('button'); if(!b) return; finSeg = b.getAttribute('data-seg'); renderFin(); $('fab').hidden = finSeg === 'guia'; window.scrollTo(0, 0); });
 $('fmPrev').addEventListener('click', function(){ fm = new Date(fm.getFullYear(), fm.getMonth() - 1, 1); renderFin(); });
 $('fmNext').addEventListener('click', function(){ fm = new Date(fm.getFullYear(), fm.getMonth() + 1, 1); renderFin(); });
 $('verExtrato').addEventListener('click', function(){ finSeg = 'extrato'; renderFin(); window.scrollTo(0, 0); });

@@ -255,7 +255,7 @@ function renderRail(){
     var row = el('button', 'st2' + (isnow ? ' isnow' : '') + (done ? ' done' : '') + (late ? (delay ? ' delay' : ' late') : '') + (popId === b.k ? ' pop' : ''));
     row.type = 'button'; row.id = 'st-' + b.k; row.style.setProperty('--c', sky(b.s)); row.setAttribute('aria-pressed', done ? 'true' : 'false');
     var bd = el('span', 'bd'); bd.innerHTML = done ? CHECK : iconeDe(b); row.appendChild(bd);
-    var body = el('span'); body.appendChild(el('span', 'tm', hora(b.s) + ' – ' + hora(b.e)));
+    var body = el('span'); body.appendChild(el('span', 'tm', b.e >= 1440 ? hora(b.s) : hora(b.s) + ' – ' + hora(b.e)));
     var t = el('span', 't', b.t);
     if(late) t.appendChild(el('span', 'tag ' + (delay ? 'delay' : 'late'), passado ? 'furou' : delay ? 'atrasado ' + (m - b.due) + ' min' : 'sem marcar'));
     else if(b.opcional && !done) t.appendChild(el('span', 'tag opt', 'opcional'));

@@ -337,9 +337,9 @@ function renderChart3(){
 }
 function renderCorte(r){
   var box = $('corteBox'); box.textContent = ''; var itens = [];
-  orcAtivo(FIN.orc.nao).forEach(function(o){ itens.push({tipo:'planilha', o:o, nome:o.nome, valor:+o.valor, sub:'fixo da planilha · ' + catDe(o.cat).n}); });
+  orcAtivo(FIN.orc.nao).forEach(function(o){ itens.push({tipo:'planilha', o:o, nome:o.nome, valor:+o.valor, sub:'fixo da planilha'}); });
   var por = {}; lancMes(fm).forEach(function(t){ if(t.tipo === 'gasto' && catDe(t.cat).g === 'nao' && !t.orc) por[t.cat] = (por[t.cat] || 0) + (+t.valor || 0); });
-  Object.keys(por).forEach(function(id){ itens.push({tipo:'cat', nome:catDe(id).n, valor:por[id], sub:'avulsos deste mês'}); });
+  Object.keys(por).forEach(function(id){ itens.push({tipo:'cat', nome:catDe(id).n, valor:por[id], sub:'avulsos do mês'}); });
   if(r.arrep > 0) itens.push({tipo:'best', nome:'Besteiras marcadas', valor:r.arrep, sub:r.nArrep + ' gastos que você disse que não precisava'});
   itens.sort(function(a, b){ return b.valor - a.valor; });
   var total = itens.reduce(function(s, x){ return s + x.valor; }, 0);
@@ -347,7 +347,7 @@ function renderCorte(r){
   if(!itens.length){ box.appendChild(el('p', 'empty', 'Nada não essencial ainda. Preenche a planilha e lança os gastos.')); return; }
   itens.slice(0, 10).forEach(function(x){
     var row = el('div', 'orc-row'); if(x.tipo !== 'planilha') row.style.gridTemplateColumns = 'minmax(0,1fr) auto';
-    var tx = el('span'); tx.appendChild(el('span', 'nm', x.nome)); var sb = el('span', 'sb', x.sub + ' · '); var b = el('b', null, 'cortando: +' + fmtK(x.valor * 12) + '/ano'); sb.appendChild(b); tx.appendChild(sb); row.appendChild(tx);
+    var tx = el('span'); tx.appendChild(el('span', 'nm', x.nome)); var sb = el('span', 'sb', x.sub + ' · '); var b = el('b', null, '+' + fmtK(x.valor * 12) + '/ano se cortar'); sb.appendChild(b); tx.appendChild(sb); row.appendChild(tx);
     row.appendChild(el('span', 'vl', fmt(x.valor)));
     if(x.tipo === 'planilha'){ var c = el('button', 'cutbtn', 'Cortar'); c.type = 'button'; c.id = 'corte-' + x.o.id; c.addEventListener('click', function(){ if(!confirm('Marcar "' + x.o.nome + '" como cortado?')) return; x.o.cortadoEm = new Date().toISOString(); finSave(); render(); toast('Cortado. Menos ' + fmt(x.o.valor) + ' por mês.'); }); row.appendChild(c); }
     box.appendChild(row);
