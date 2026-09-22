@@ -110,6 +110,7 @@ function renderInv(){
     var v = por[cl.id] || 0, row = el('div'); row.style.setProperty('--cc', cl.c); row.style.opacity = invSel && invSel !== cl.id ? '.45' : '1'; row.style.cursor = 'pointer';
     row.appendChild(el('i')); row.appendChild(el('span', null, cl.n)); row.appendChild(el('b', null, total ? Math.round(v / total * 100) + '% · ' + fmtK(v) : '0%'));
     row.addEventListener('click', function(){ invSel = invSel === cl.id ? null : cl.id; renderInv(); });
+    var lb = el('em', 'lbar'); var ls = el('s'); ls.style.width = (total ? v / total * 100 : 0) + '%'; lb.appendChild(ls); row.appendChild(lb);
     leg.appendChild(row);
   });
   /* reserva */
@@ -134,7 +135,7 @@ function renderInv(){
     });
   });
   $('assetsSub').textContent = FIN.inv.length ? 'toca pra editar o valor' : '';
-  renderJogo(); renderSugestao(); renderMercado();
+  renderJogo(); renderSugestao(); renderMercado(); renderPatrimonio();
   if(!aporteVal){ var sg0 = sugestaoMes(); if(sg0.valor > 0) aporteVal = Math.max(0, sg0.valor - sg0.jaFoi); }
   /* checkup */
   var ck = $('checkup'); ck.textContent = ''; ck.appendChild(el('h3', null, 'Checkup da carteira'));

@@ -290,7 +290,7 @@ function renderFinMes(){
     var top = lancMes(fm).filter(function(t){ return t.arrep; }).sort(function(a, b){ return b.valor - a.valor; }).slice(0, 3);
     var ul = el('div'); top.forEach(function(t){ ul.appendChild(txRow(t)); }); rg.appendChild(ul);
   }
-  renderChart3(); renderCorte(r);
+  renderQuick(); renderChart3(); renderCorte(r);
   var lt = $('lastTx'); lt.textContent = '';
   var ult = lancMes(fm).slice().sort(function(a, b){ return b.data.localeCompare(a.data) || (b.atualizadoEm || '').localeCompare(a.atualizadoEm || ''); }).slice(0, 5);
   if(!ult.length) lt.appendChild(el('p', 'empty', 'Nada ainda.'));

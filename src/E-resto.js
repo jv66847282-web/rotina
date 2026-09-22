@@ -306,7 +306,7 @@ function tick(){
   if(b !== balde){ balde = b; renderHoje(); } else renderNow();
 }
 carregar(); finLoad();
-if(DEMO){ if(!ler('demo-ok', false)) demoSeed(); var dm = el('div', 'save'); dm.textContent = 'DEMO · dados de exemplo'; dm.style.cssText = 'display:block;top:auto;bottom:calc(78px + var(--sab));left:12px;right:auto;background:var(--mid);color:var(--on-sky);font-weight:600'; document.body.appendChild(dm); }
+if(DEMO){ if(+ler('demo-ok', 0) < 2) demoSeed(); var dm = el('div', 'save'); dm.textContent = 'DEMO · dados de exemplo'; dm.style.cssText = 'display:block;top:auto;bottom:calc(78px + var(--sab));left:12px;right:auto;background:var(--mid);color:var(--on-sky);font-weight:600'; document.body.appendChild(dm); }
 aplicarTema(temaAtual());
 $('temaSeg').addEventListener('click', function(e){ var b = e.target.closest('button'); if(!b) return; var t = b.getAttribute('data-tema'); try{ localStorage.setItem('rotina.v3.tema', t); }catch(x){} aplicarTema(t); toast(t === 'light' ? 'Tema claro.' : t === 'dark' ? 'Tema escuro.' : 'Segue o celular.'); });
 if(window.matchMedia) try{ window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', function(){ if(temaAtual() === 'auto') aplicarTema('auto'); }); }catch(e){}

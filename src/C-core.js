@@ -1,7 +1,7 @@
 <script>
 (function(){
 'use strict';
-var VERSAO = '3.4.3';
+var VERSAO = '3.5';
 var CONTA_DESDE = new Date(2026, 8, 22);
 var INICIO = new Date(2026, 8, 28);
 var DOW3 = ['dom','seg','ter','qua','qui','sex','sáb'];
@@ -57,10 +57,10 @@ function rotinaOriginal(){
       B('acordar','07:00','Acordar','De pé até 7h30. Janela aberta, sol na cara, celular longe da cama.',{vale:true}),
       B('cafe','07:15','Café na casa da mãe','O notebook fica em casa.'),
       B('sair','07:50','Sair da casa da mãe','Xícara na pia, tchau e rua. No caminho, decide as 3 entregas da manhã.',{vale:true,r:'Se o alarme das 7h50 tocou, então levanto da mesa na hora.'}),
-      B('planejar','08:05','Planejar a semana','No máximo 3 metas, uma delas de receita ou de lead. Tudo vira bloco na agenda, com folga de 50% no tempo.',{vale:true,quando:'seg',dur:30}),
-      B('foco','08:05','Bloco de foco','Na mesa, sentado, nunca deitado. Começa pela entrega nº 1. Mensagens só às 9h45 e às 11h45.',{vale:true,r:'Lead novo é a exceção: responder em até 1h.'}),
+      B('planejar','08:05','Planejar a semana','No máximo 3 metas da semana: uma de conteúdo, uma de equipe, uma de receita. Tudo vira bloco na agenda, com folga de 50% no tempo.',{vale:true,quando:'seg',dur:30}),
+      B('foco','08:05','Bloco de foco','No PC, porta fechada. Começa pelo conteúdo mais difícil do dia. Mensagens da equipe só às 9h45 e às 11h45.',{vale:true,r:'Se a equipe travar, resolve no bloco de mensagens, não no meio do foco.'}),
       B('almoco','12:00','Almoço','Longe da tela de trabalho. Em dia de treino, mais leve.'),
-      B('rasas','13:00','Tarefas rasas','WhatsApp, e-mail, financeiro, leads. Último café do dia até as 14h.'),
+      B('rasas','13:00','Tarefas rasas','Equipe, aprovações de cliente, e-mail, financeiro. Último café do dia até as 14h.'),
       B('academia','14:10','Academia','Trocado na porta às 14h15, treinando às 14h30. O podcast que só toca lá.',{vale:true,treino:true,quando:'treino',r:'Sem energia? Vai e faz 20 min. Perdeu a hora? Reserva às 17h.'}),
       B('academia_reserva','14:10','Treino reserva','Só se faltou algum treino na semana. Se não, descansa.',{opcional:true,treino:true,quando:'semtreino'}),
       B('banho','15:45','Banho e lanche','Direto pro que faltou.'),
@@ -94,6 +94,8 @@ function carregar(){
   T = ler('template', null);
   if(!T || !T.util || !T.fds){ T = rotinaOriginal(); }
   if(!Array.isArray(T.treino)) T.treino = [1,2,4,5];
+  /* migracao de textos (so troca o que ainda esta igual ao padrao antigo) */
+  if((T.tv || 1) < 2){ var MIG = {planejar:['No máximo 3 metas, uma delas de receita ou de lead. Tudo vira bloco na agenda, com folga de 50% no tempo.', 'No máximo 3 metas da semana: uma de conteúdo, uma de equipe, uma de receita. Tudo vira bloco na agenda, com folga de 50% no tempo.'], foco:['Na mesa, sentado, nunca deitado. Começa pela entrega nº 1. Mensagens só às 9h45 e às 11h45.', 'No PC, porta fechada. Começa pelo conteúdo mais difícil do dia. Mensagens da equipe só às 9h45 e às 11h45.', 'Lead novo é a exceção: responder em até 1h.', 'Se a equipe travar, resolve no bloco de mensagens, não no meio do foco.'], rasas:['WhatsApp, e-mail, financeiro, leads. Último café do dia até as 14h.', 'Equipe, aprovações de cliente, e-mail, financeiro. Último café do dia até as 14h.']}; (T.util || []).forEach(function(b){ var m = MIG[b.k]; if(!m) return; if(b.d === m[0]) b.d = m[1]; if(m[2] && b.r === m[2]) b.r = m[3]; }); T.tv = 2; salvarT(); }
   dias = ler('dias', {}) || {};
   diag = ler('diag', {}) || {};
   cfg = ler('cfg', {}) || {};

@@ -63,8 +63,9 @@ function demoSeed(){
     dividas:[{id:uid(), credor:'Nubank · fatura atrasada', saldo:2350, taxa:14.5, parcela:300, tipo:'rotativo'}, {id:uid(), credor:'Empréstimo pessoal Inter', saldo:4800, taxa:4.2, parcela:420, tipo:'emprestimo'}],
     guia:{raiox:true, prolabore:true},
     jogo:{pontos:10, hist:[{data:ap1.data, pts:10, motivo:'Reserva primeiro: +10'}], meses:{}, missoes:{}},
-    cfg:{pctInvestir:20, jogoDesde:'2026-10', contaPadrao:'c_nu'}
+    cfg:{pctInvestir:20, jogoDesde:'2026-10', contaPadrao:'c_nu'},
+    snap:(function(){ var s = {}, vals = [[4100, 4000], [4900, 4700], [5600, 5300], [6500, 6100], [7600, 7000], [8100, 7500]]; for(var i = 5; i >= 0; i--){ var d = new Date(y, m0 - i, 1); s[mesKey(d)] = {atual:vals[5 - i][0], aplicado:vals[5 - i][1]}; } return s; })()
   };
   diag = {meq:true, tempo:true}; gravar('diag', diag);
-  finSave(); gravar('demo-ok', true);
+  finSave(); gravar('demo-ok', 2);
 }
