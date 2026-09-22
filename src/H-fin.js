@@ -300,15 +300,34 @@ function renderFinMes(){
 function renderChart3(){
   var box = $('chart3'); box.textContent = '';
   var meses = [], maxV = 0;
-  for(var i = 5; i >= 0; i--){ var d = new Date(fm.getFullYear(), fm.getMonth() - i, 1), L = lancMes(d), e = 0, n = 0, g = 0; L.forEach(function(t){ if(t.tipo === 'ganho') g += +t.valor || 0; else if(t.tipo === 'gasto'){ if(catDe(t.cat).g === 'ess') e += +t.valor || 0; else n += +t.valor || 0; } }); meses.push({d:d, g:g, e:e, n:n}); maxV = Math.max(maxV, g, e, n); }
+  for(var i = 5; i >= 0; i--){ var d = new Date(fm.getFullYear(), fm.getMonth() - i, 1), L = lancMes(d), e = 0, n = 0, g = 0; L.forEach(function(t){ if(t.tipo === 'ganho') g += +t.valor || 0; else if(t.tipo === 'gasto'){ if(catDe(t.cat).g === 'ess') e += +t.valor || 0; else n += +t.valor || 0; } }); meses.push({d:d, g:g, e:e, n:n}); }
+  /* so meses com dado (o atual sempre entra) */
+  meses = meses.filter(function(m, k){ return k === meses.length - 1 || m.g || m.e || m.n; });
+  meses.forEach(function(m){ maxV = Math.max(maxV, m.g, m.e, m.n); });
   if(!maxV){ box.appendChild(el('p', 'empty', 'Sem lançamentos ainda. O gráfico aparece com o primeiro mês.')); return; }
-  var W = 360, H = 150, pad = 4, base = H - 22, gw = W / 6, bw = (gw - 14) / 3, ns = 'http://www.w3.org/2000/svg', svg = document.createElementNS(ns, 'svg'); svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+  var ns = 'http://www.w3.org/2000/svg', W = 360, H = 240, top = 26, base = H - 28, dep = 9, nM = meses.length, gw = W / nM, bw = Math.min(30, (gw - 18 - dep) / 3);
+  var svg = document.createElementNS(ns, 'svg'); svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+  function tone(hex, f){ var r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16); return 'rgb(' + Math.round(r * f) + ',' + Math.round(g * f) + ',' + Math.round(b * f) + ')'; }
+  function poly(pts, fill, op){ var p = document.createElementNS(ns, 'polygon'); p.setAttribute('points', pts.map(function(q){ return q[0] + ',' + q[1]; }).join(' ')); p.setAttribute('fill', fill); if(op != null) p.style.opacity = op; return p; }
+  /* linhas de grade */
+  for(var gl = 1; gl <= 3; gl++){ var y = base - (base - top) * gl / 3, ln = document.createElementNS(ns, 'line'); ln.setAttribute('x1', 0); ln.setAttribute('x2', W); ln.setAttribute('y1', y); ln.setAttribute('y2', y); ln.setAttribute('stroke', 'currentColor'); ln.style.opacity = '.08'; svg.appendChild(ln); }
+  var chao = document.createElementNS(ns, 'line'); chao.setAttribute('x1', 0); chao.setAttribute('x2', W); chao.setAttribute('y1', base); chao.setAttribute('y2', base); chao.setAttribute('stroke', 'currentColor'); chao.style.opacity = '.25'; svg.appendChild(chao);
   meses.forEach(function(m, i){
-    [['g', '#3ECF8E'], ['e', '#6F8CFF'], ['n', '#FF6B7A']].forEach(function(k, j){ var h = m[k[0]] / maxV * (base - 14), r = document.createElementNS(ns, 'rect'); r.setAttribute('x', i * gw + 7 + j * bw); r.setAttribute('y', base - h); r.setAttribute('width', Math.max(0, bw - 2)); r.setAttribute('height', h); r.setAttribute('rx', '3'); r.setAttribute('fill', k[1]); r.style.opacity = same(m.d, fm) ? '1' : '.55'; svg.appendChild(r); });
-    var t = document.createElementNS(ns, 'text'); t.setAttribute('x', i * gw + gw / 2); t.setAttribute('y', H - 6); t.setAttribute('text-anchor', 'middle'); t.textContent = MES3[m.d.getMonth()]; if(same(m.d, fm)) t.style.fill = 'var(--ink)'; svg.appendChild(t);
+    var x0 = i * gw + (gw - (3 * bw + 4 + dep)) / 2, atual = same(m.d, fm);
+    [['g', '#3ECF8E'], ['e', '#6F8CFF'], ['n', '#FF6B7A']].forEach(function(k, j){
+      var v = m[k[0]], h = Math.max(v > 0 ? 3 : 0, v / maxV * (base - top)), x = x0 + j * (bw + 2), y = base - h, op = atual ? 1 : .6;
+      if(h > 0){
+        svg.appendChild(poly([[x + bw, y], [x + bw + dep, y - dep], [x + bw + dep, base - dep], [x + bw, base]], tone(k[1], .62), op));
+        svg.appendChild(poly([[x, y], [x + dep, y - dep], [x + bw + dep, y - dep], [x + bw, y]], tone(k[1], 1.18 > 1 ? 1 : 1), op)); 
+        var topo = svg.lastChild; topo.setAttribute('fill', k[1]); topo.style.filter = 'brightness(1.25)';
+        svg.appendChild(poly([[x, y], [x + bw, y], [x + bw, base], [x, base]], k[1], op));
+        if(v > 0 && (atual || nM <= 3)){ var t = document.createElementNS(ns, 'text'); t.setAttribute('x', x + bw / 2 + dep / 2); t.setAttribute('y', y - dep - 4); t.setAttribute('text-anchor', 'middle'); t.textContent = v >= 1000 ? (v / 1000).toLocaleString('pt-BR', {maximumFractionDigits:1}) + 'k' : Math.round(v); t.style.fill = 'var(--ink)'; t.style.fontSize = '10px'; svg.appendChild(t); }
+      }
+    });
+    var lb = document.createElementNS(ns, 'text'); lb.setAttribute('x', i * gw + gw / 2); lb.setAttribute('y', H - 8); lb.setAttribute('text-anchor', 'middle'); lb.textContent = MES3[m.d.getMonth()] + (nM <= 3 ? ' ' + String(m.d.getFullYear()).slice(2) : ''); if(atual) lb.style.fill = 'var(--ink)'; svg.appendChild(lb);
   });
   box.appendChild(svg);
-  var cur = meses[5], lg = el('div', 'leg3'); [['#3ECF8E', 'Entrou ' + fmtK(cur.g)], ['#6F8CFF', 'Essencial ' + fmtK(cur.e)], ['#FF6B7A', 'Não essencial ' + fmtK(cur.n)]].forEach(function(x){ var s = el('span'); var i = el('i'); i.style.background = x[0]; s.appendChild(i); s.appendChild(document.createTextNode(x[1])); lg.appendChild(s); }); box.appendChild(lg);
+  var cur = meses[meses.length - 1], lg = el('div', 'leg3'); [['#3ECF8E', 'Entrou ' + fmtK(cur.g)], ['#6F8CFF', 'Essencial ' + fmtK(cur.e)], ['#FF6B7A', 'Não essencial ' + fmtK(cur.n)]].forEach(function(x){ var s = el('span'); var i = el('i'); i.style.background = x[0]; s.appendChild(i); s.appendChild(document.createTextNode(x[1])); lg.appendChild(s); }); box.appendChild(lg);
   if(cur.g > 0) box.appendChild(el('p', 'small', 'Do que entrou, ' + Math.round(cur.e / cur.g * 100) + '% foi pro essencial e ' + Math.round(cur.n / cur.g * 100) + '% pro não essencial. O vermelho é a parte que você controla.'));
 }
 function renderCorte(r){
