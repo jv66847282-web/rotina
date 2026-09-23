@@ -21,6 +21,7 @@ function renderGuia(){
     body.appendChild(b); card.appendChild(body); box.appendChild(card);
   });
   $('guideCount').textContent = ok + ' de ' + GUIA.length;
+  var gb = $('guiaBar'); if(gb){ gb.firstChild.style.width = Math.round(ok / GUIA.length * 100) + '%'; gb.className = 'ratio' + (ok >= GUIA.length ? '' : ok >= 6 ? '' : ' warn'); }
   var ib = $('indicadores'); ib.textContent = '';
   INDIC.forEach(function(x){ var c = el('div', 'step open'); var h = el('div', 'step-head'); h.style.gridTemplateColumns = 'minmax(0,1fr)'; h.appendChild(el('span', 't', x.t)); c.appendChild(h); var bd = el('div', 'step-body'); bd.appendChild(el('p', 'ev', x.f)); bd.appendChild(el('p', null, x.d)); c.appendChild(bd); ib.appendChild(c); });
   var mb = $('mitos'); mb.textContent = '';

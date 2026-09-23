@@ -290,7 +290,7 @@ function renderFinMes(){
     var top = lancMes(fm).filter(function(t){ return t.arrep; }).sort(function(a, b){ return b.valor - a.valor; }).slice(0, 3);
     var ul = el('div'); top.forEach(function(t){ ul.appendChild(txRow(t)); }); rg.appendChild(ul);
   }
-  renderQuick(); renderChart3(); renderCorte(r);
+  renderQuick(); renderApagar(); renderChart3(); renderCorte(r);
   var lt = $('lastTx'); lt.textContent = '';
   var ult = lancMes(fm).slice().sort(function(a, b){ return b.data.localeCompare(a.data) || (b.atualizadoEm || '').localeCompare(a.atualizadoEm || ''); }).slice(0, 5);
   if(!ult.length) lt.appendChild(el('p', 'empty', 'Nada ainda.'));
@@ -298,6 +298,22 @@ function renderFinMes(){
 }
 
 var chartModo = 'mes';
+function renderApagar(){
+  var box = $('apagar'); if(!box) return; box.textContent = ''; var pg = pagos(fm);
+  var L = FIN.orc.ess.concat(FIN.orc.nao).filter(function(o){ return !o.cortadoEm && (+o.valor || 0) > 0 && !pg[o.id]; }).sort(function(a, b){ return (+b.valor) - (+a.valor); });
+  box.hidden = !L.length; if(!L.length) return;
+  var tot = L.reduce(function(s, o){ return s + (+o.valor || 0); }, 0);
+  var hd = el('div', 'orc-total'); hd.style.padding = '0'; hd.appendChild(el('span', null, 'A pagar este mês · ' + L.length + (L.length === 1 ? ' conta' : ' contas'))); hd.appendChild(el('b', null, fmt(tot))); box.appendChild(hd);
+  L.slice(0, 4).forEach(function(o){
+    var c = catDe(o.cat), row = el('div', 'row2'); row.style.setProperty('--cc', c.c);
+    row.appendChild(el('span', 'ic', c.n.slice(0, 2).toUpperCase()));
+    var tx = el('span'); tx.appendChild(el('span', 't', o.nome)); tx.appendChild(el('span', 's', c.n)); row.appendChild(tx);
+    row.appendChild(el('span', 'v', fmt(o.valor)));
+    var b = el('button', 'cutbtn', 'Pagar'); b.type = 'button'; b.id = 'pg-' + o.id; b.addEventListener('click', function(){ sheetLanc({id:uid(), tipo:'gasto', valor:+o.valor, desc:o.nome, cat:o.cat, conta:(FIN.cfg && FIN.cfg.contaPadrao) || (FIN.contas[0] || {}).id || '', data:keyOf(midnight(agora())), arrep:false, orc:o.id}); }); row.appendChild(b);
+    box.appendChild(row);
+  });
+  if(L.length > 4){ var mais = el('button', 'linkbtn', 'Ver as outras ' + (L.length - 4) + ' na Planilha'); mais.type = 'button'; mais.id = 'apagarMais'; mais.addEventListener('click', function(){ finSeg = 'planilha'; renderFin(); window.scrollTo(0, 0); }); box.appendChild(mais); }
+}
 function renderChart3(){
   var box = $('chart3'); box.textContent = '';
   var head = el('div', 'cmode'); head.appendChild(el('span', 'small', chartModo === 'mes' ? 'Acumulado, dia a dia' : 'Total por mês'));

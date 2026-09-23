@@ -276,6 +276,7 @@ function render(){
   else if(tab === 'investir') renderInv();
   else { renderDiag(); renderLembretes(); $('rotBox').hidden = !rotAberta; $('rotToggle').textContent = rotAberta ? 'Fechar' : 'Abrir'; if(rotAberta) renderRotina(); }
   $('fab').hidden = tab !== 'financas' || finSeg === 'guia';
+  var gl = $('hojeGlow'); if(gl) gl.hidden = tab !== 'hoje';
   renderInstall();
 }
 $('pl-semana').addEventListener('click', function(){ plSeg = 'semana'; render(); });

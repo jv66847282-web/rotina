@@ -191,6 +191,7 @@ function renderProg(){
     var ok = marcado(rr, b.k), late = !ok && (sel < hoje || (same(sel, hoje) && m >= b.due));
     segs.appendChild(el('i', (ok ? 'on' : '') + (late ? ' late' : '')));
   });
+  $('progCta').hidden = !same(sel, hoje) || r.p === 100 || !document.querySelector('#rail .isnow');
   var msg = $('progMsg');
   msg.className = 'prog-msg' + (r.p === 100 ? ' full' : '');
   if(!r.conta) msg.textContent = 'Fora do placar.';
@@ -243,8 +244,9 @@ function renderRail(){
   var L = plano(sel), temAjuste = rr && ((rr.horarios && Object.keys(rr.horarios).length) || (rr.pulados && rr.pulados.length));
   L.forEach(function(b){
     var isnow = ehHoje && m >= b.s && m < b.e;
+    if(railFiltro !== 'tudo'){ if(!b.check) return; var dn = marcado(rr, b.k); if(railFiltro === 'feito' && !dn) return; if(railFiltro === 'falta' && dn) return; }
     if(!b.check){
-      var ps = el('div', 'ps' + (isnow ? ' isnow' : '')); ps.style.setProperty('--c', sky(b.s));
+      var ps = el('div', 'ps' + (isnow ? ' isnow' : '')); ps.id = 'ps-' + b.k; ps.style.setProperty('--c', sky(b.s));
       ps.appendChild(el('span', 'dot2'));
       var pt = el('span', 'pt'); pt.appendChild(el('b', null, hora(b.s))); pt.appendChild(document.createTextNode(b.t)); if(b.d) pt.appendChild(el('span', 'pd', b.d)); ps.appendChild(pt);
       box.appendChild(ps); return;
@@ -324,4 +326,20 @@ $('editReset').addEventListener('click', function(){ var r = rec(sel); delete r.
 $('back').addEventListener('click', function(){ sel = midnight(agora()); editing = false; renderHoje(); });
 $('nowBtn').addEventListener('click', function(){ if(nowId) toggle(midnight(agora()), nowId); });
 
-function renderHoje(){ renderHead(); renderStrip(); renderEdit(); renderOntem(); renderRetorno(); renderNow(); renderProg(); renderRail(); }
+var railFiltro = 'tudo';
+$('railf').addEventListener('click', function(e){ var b = e.target.closest('button'); if(!b) return; railFiltro = b.getAttribute('data-f'); $('railf').querySelectorAll('button').forEach(function(x){ x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); }); renderRail(); });
+function renderHStrip(){
+  var box = $('hstrip'); box.textContent = ''; var now = agora(), hoje = midnight(now), ehHoje = same(sel, hoje), m = now.getHours()*60 + now.getMinutes(), rr = dias[keyOf(sel)], atual = null;
+  if(editing){ box.hidden = true; return; } box.hidden = false;
+  plano(sel).forEach(function(b){
+    var isnow = ehHoje && m >= b.s && m < b.e, done = b.check && marcado(rr, b.k);
+    var p = el('button', 'hp' + (isnow ? ' isnow' : '') + (done ? ' done' : '')); p.type = 'button'; p.id = 'hp-' + b.k; p.style.setProperty('--c', sky(b.s));
+    p.appendChild(el('b', null, hora(b.s))); var ic = el('span'); ic.innerHTML = done ? CHECK : iconeDe(b); p.appendChild(ic); p.appendChild(el('span', null, b.t.split(' ')[0]));
+    p.addEventListener('click', function(){ var t = $('st-' + b.k) || $('ps-' + b.k); if(t){ t.scrollIntoView({behavior:'smooth', block:'center'}); } });
+    box.appendChild(p); if(isnow) atual = p;
+  });
+  if(atual) setTimeout(function(){ try{ atual.scrollIntoView({inline:'center', block:'nearest'}); }catch(e){} }, 30);
+}
+function renderGlow(){ var g = $('hojeGlow'); if(!g) return; var now = agora(); g.style.setProperty('--sky', sky(now.getHours()*60 + now.getMinutes())); }
+$('progCta').addEventListener('click', function(){ var t = document.querySelector('#rail .isnow'); if(t) t.scrollIntoView({behavior:'smooth', block:'center'}); });
+function renderHoje(){ renderGlow(); renderHead(); renderStrip(); renderHStrip(); renderEdit(); renderOntem(); renderRetorno(); renderNow(); renderRail(); renderProg(); }
